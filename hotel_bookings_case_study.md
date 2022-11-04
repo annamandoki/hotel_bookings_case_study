@@ -1,7 +1,7 @@
 Hotel Bookings Case Study
 ================
 Anna Mándoki
-2022-11-03
+2022-11-04
 
 ## 1. Introduction
 
@@ -38,9 +38,9 @@ The following stakeholder goals will guide the analysis:
   - Is the number of bookings for each distribution type different
     depending on whether or not there was a deposit or what market
     segment they represent?
-- Prevent cancellations. What types of bookings are likely to get
-  cancelled? How many reservations were cancelled out of total? What is
-  the most frequent deposit type for cancelled reservations?
+- Goal 4: Prevent cancellations. What types of bookings are likely to
+  get cancelled? How many reservations were cancelled out of total? What
+  is the most frequent deposit type for cancelled reservations?
 
 Further areas of interest:
 
@@ -51,8 +51,7 @@ How many reservations were made by repeated guests?
 
 Which countries do customers come from? What types of customers are most
 common in each hotel? What is their preferred meal plan? Which hotel is
-preferred by adults with children? What is the strongest market segment
-and distribution channel?
+preferred by adults with children?
 
 ### 2.2 Stakeholders
 
@@ -1120,6 +1119,9 @@ glimpse(hotel_bookings_v2)
 
 ### 5.1 Summary statistics
 
+Let’s run some statistics to get a first idea for our analysis and to be
+able to spot potential outliers.
+
 ``` r
 hotel_bookings_v2 %>%
   select(lead_time, stays_in_weekend_nights, stays_in_week_nights,adults,children,babies,previous_cancellations,previous_bookings_not_canceled,booking_changes,days_in_waiting_list,adr,required_car_parking_spaces,total_of_special_requests) %>%
@@ -1160,13 +1162,54 @@ hotel_bookings_v2 %>%
 - The average lead time is 79.89 days, meaning that guests tend to book
   approximately 2,5 month in advance. The maximum lead time was 737 days
   (2 years).
+- The maximum number of adults in a single booking was 55, seems a
+  little bit odd, but not impossible (company event, wedding, big family
+  gathering). The minimum number of adults is 0, seems strange.
+- The maximum number of children in a single booking was 10, which is
+  also a little bit odd, but again, not impossible.
+- The difference in average daily rates is quite significant: -6.38 and
+  5400.
 
 ### 5.3 Data visualizations
 
-#### 5.3.1 Who tends to book early?
+#### 5.3.1 Data timeline
+
+First, let’s look at the timeline our data covers. We noted at the
+beginning that the data contains bookings from July 2015 - August 2017,
+which means we have 6 months of data for 2015, full year data for 2016
+and 8 months data for 2017.
+
+Take a look at the monthly breakdown of the data.
+
+``` r
+ggplot(data = hotel_bookings_v2) +
+  geom_bar(mapping = aes(x = arrival_date_month, fill = arrival_date_month)) +
+  facet_wrap(~arrival_date_year) +
+  labs(title = "Number of guest arrivals per month", x = " ", y = " ") +
+  theme(axis.text.x = element_text(angle = 90),legend.position = "none")
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/monthly%20bookings%20year-1.png)<!-- -->
+Busiest months: May 2017, July 2017, August 2016
+
+``` r
+ggplot(data = hotel_bookings_v2) +
+  geom_bar(position = "dodge", mapping = aes(x = arrival_date_month, fill = hotel)) +
+  facet_wrap(~arrival_date_year) +
+  labs(title = "Number of guest arrivals per hotel type", x = " ", y = " ") +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/monthly%20bookings%20hotel%20type-1.png)<!-- -->
+
+The City Hotel is more popular. Busiest month in City Hotel: May 2017
+
+#### 5.3.2 Who tends to book early?
 
 A stakeholder is planning a marketing campaign to target people who book
-early.
+early. Let’s find out what group of guests tend to book early.
+
+- **Lead time by hotel type**
 
 ``` r
 ggplot(data = hotel_bookings_v2) +
@@ -1175,7 +1218,7 @@ ggplot(data = hotel_bookings_v2) +
 ```
 
 ![](hotel_bookings_case_study_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
-Average lead time
+\* **Average lead time by hotel type**
 
 ``` r
 lead_time_hotel <- hotel_bookings_v2 %>%
@@ -1198,6 +1241,7 @@ ggplot(data = lead_time_hotel) +
 ```
 
 ![](hotel_bookings_case_study_files/figure-gfm/plot%20avg%20lead%20time%20hotel-1.png)<!-- -->
+\* **Average lead time by number of children**
 
 ``` r
 lead_time_children <- hotel_bookings_v2 %>%
@@ -1220,15 +1264,21 @@ Average lead time is the highest among guests with 1 child, they tend to
 book well in advance.
 
 ``` r
+# excluding the booking with 10 children
 lead_time_children %>%
   filter(children !=10) %>%
   ggplot() +
-  geom_col(mapping = aes(x = reorder(children, -avg_lead_time), y = avg_lead_time, fill = children)) +
+  geom_col(mapping = aes(x = reorder(children, -avg_lead_time), y = avg_lead_time, fill = avg_lead_time)) +
   labs(title = "Average lead time by number of children", x = " ", y = "Average lead time (in days)") +
   theme(legend.position = "none")
 ```
 
 ![](hotel_bookings_case_study_files/figure-gfm/avg%20lead%20time%20children%20plot-1.png)<!-- -->
+
+- **Average lead time by distribution channel**
+
+Create ‘lead_time_distribution’ data frame to have a look at the
+numbers.
 
 ``` r
 lead_time_distribution <- hotel_bookings_v2 %>%
@@ -1247,29 +1297,33 @@ print(lead_time_distribution)
     ## 4 TA/TO                         88.6             0           629
     ## 5 Undefined                    103             103           103
 
-Guest booking through Travel Agencies or Travel Offices tend to book
-earlier.
+Observation: Guests booking through Travel Agencies or Travel Offices
+tend to book earlier.
 
 ``` r
 lead_time_distribution %>%
   filter(distribution_channel != "Undefined") %>%
   ggplot() +
-  geom_col(mapping = aes(x = reorder(distribution_channel, -avg_lead_time), y = avg_lead_time, fill = distribution_channel)) +
+  geom_col(mapping = aes(x = reorder(distribution_channel, -avg_lead_time), y = avg_lead_time, fill = avg_lead_time)) +
   labs(title = "Average lead time by distribution channel", x = " ", y = "Average lead time (in days)") +
   theme(legend.position = "none")
 ```
 
 ![](hotel_bookings_case_study_files/figure-gfm/avg%20lead%20time%20distribution-1.png)<!-- -->
 
-**Goal 1: Marketing campaign targeting guests who tend to book early**
+\*\* Observations - Goal 1: Marketing campaign targeting guests who tend
+to book early\*\*
 
 - Resort Hotel guests
 - Guests with 1 child
 - Guests booking through travel agencies or travel offices
 
-#### 5.3.2 Weekend bookings
+#### 5.3.3 Weekend bookings
 
-What group of guests book the most weekend nights?
+A stakeholder wants to increase weekend bookings. Let’s find out what
+group of guests book the most weekend nights?
+
+- **Weekend night stays by hotel type**
 
 ``` r
 ggplot(data = hotel_bookings_v2) +
@@ -1278,20 +1332,27 @@ ggplot(data = hotel_bookings_v2) +
 ```
 
 ![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%20hotel%20type-1.png)<!-- -->
-Guest book more weekend nights in City Hotel.
+Guests book more weekend nights in City Hotel. (City Hotel had more
+bookings in general.)
+
+- **Weekend night stays by number of children**
 
 ``` r
 hotel_bookings_v2 %>%
   filter(children != 10) %>%
+  group_by(children) %>%
+  summarize(weekend_nights = sum(stays_in_weekend_nights)) %>%
   ggplot() +
-  geom_col(mapping = aes(x = children, y = stays_in_weekend_nights, fill = children)) +
-  labs(title = "Weekend nights by number of children", x = "No. of children", y = "Number of weekend nights") +
+  geom_col(mapping = aes(x = children, y = weekend_nights, fill = weekend_nights)) +
+  labs(title = "Weekend night stays by number of children", x = "No. of children", y = "No. of weekend nights") +
   theme(legend.position = "none")
 ```
 
 ![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%20children-1.png)<!-- -->
 
 Guests without children book the most weekend nights.
+
+- **Weekend night stays vs week night stays**
 
 ``` r
 hotel_bookings_v2 %>%
@@ -1305,35 +1366,56 @@ hotel_bookings_v2 %>%
     ## 1 City Hotel           46595     121510
     ## 2 Resort Hotel         41258     107930
 
+- **Weekend night stays by arrival date**
+
 ``` r
 hotel_bookings_v2 %>%
+  filter(arrival_date_year == 2016) %>%
   group_by(arrival_date_month) %>%
   summarize(weekend_nights = sum(stays_in_weekend_nights)) %>%
   ggplot() +
   geom_col(mapping = aes(x= arrival_date_month, y = weekend_nights, fill = weekend_nights)) +
-  labs(title = "Weekend night stays by month", x = " ", y = "No. of weekend nights") +
+  labs(title = "Weekend night stays in 2016 by month", x = " ", y = "No. of weekend nights") +
   theme(axis.text.x = element_text(angle = 90), legend.position = "none")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%20by%20month-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%202016%20by%20month-1.png)<!-- -->
 
 ``` r
-ggplot(data = hotel_bookings_v2) +
-  geom_col(mapping = aes(x= arrival_date_month, y = stays_in_weekend_nights, fill = arrival_date_month)) +
-  facet_wrap(~arrival_date_year) +
-  labs(title = "Weekend night stays by month and year", x = " ", y = "No. of weekend nights") +
-  theme(axis.text.x = element_text(angle = 90), legend.position = "none" )
+hotel_bookings_v2 %>%
+  filter(arrival_date_year == 2016) %>%
+  group_by(arrival_date_week_number) %>%
+  summarize(weekend_nights = sum(stays_in_weekend_nights)) %>%
+  ggplot() +
+  geom_col(mapping = aes(x= arrival_date_week_number, y = weekend_nights, fill = weekend_nights)) +
+  labs(title = "Weekend night stays in 2016 by week", x = " ", y = "No. of weekend nights") +
+  theme(legend.position = "none")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/weekend%20night%20month%20year-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
+hotel_bookings_v2 %>%
+  filter(arrival_date_year == 2017) %>%
+  group_by(arrival_date_month) %>%
+  summarize(weekend_nights = sum(stays_in_weekend_nights)) %>%
+  ggplot() +
+  geom_col(mapping = aes(x= arrival_date_month, y = weekend_nights, fill = weekend_nights)) +
+  labs(title = "Weekend night stays in 2017 by month", x = " ", y = "No. of weekend nights") +
+  theme(axis.text.x = element_text(angle = 90), legend.position = "none")
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%202017%20by%20month-1.png)<!-- -->
 Summer month are popular for weekend stays.
+
+- **Weekend night stays by market segment**
 
 ``` r
 hotel_bookings_v2 %>%
   group_by(market_segment) %>%
-  summarize(stays_in_weekend_nights = sum(stays_in_weekend_nights)) %>%
+  summarize(weekend_nights = sum(stays_in_weekend_nights)) %>%
   ggplot()+
-  geom_col(mapping = aes(x = reorder(market_segment, stays_in_weekend_nights), y = stays_in_weekend_nights, fill = market_segment)) +
+  geom_col(mapping = aes(x = reorder(market_segment, weekend_nights), y = weekend_nights, fill = weekend_nights)) +
   labs(title = "Weekend night stays by market segment", x = " ", y = "No. of weekend nights") +
   theme(legend.position = "none") +
   coord_flip()
@@ -1350,12 +1432,12 @@ Guests without children - Guest who travel during the summer months
 (Summer month are popular in general, discounts during other seasons?) -
 Guests who book through online travel agencies
 
-#### 5.3.3 Booking distributions
+#### 5.3.4 Booking distributions
 
-How many of the transactions are occurring for each different
-distribution type?
+- **Number of transactions by distribution type**
 
 ``` r
+# excluding Undefined
 hotel_bookings_v2 %>%
   group_by(distribution_channel) %>%
   summarize(transactions = sum(distribution_channel != "Undefined")) %>%
@@ -1369,34 +1451,90 @@ hotel_bookings_v2 %>%
 
 ![](hotel_bookings_case_study_files/figure-gfm/transactions%20distribution%20channel-1.png)<!-- -->
 
+- **Number of transactions by deposit type** Is the number of bookings
+  for each distribution type different depending on whether or not there
+  was a deposit?
+
+we saw earlier when exploring the different categories, that most
+bookings had ‘No Deposit’ and only a few records contained ‘Non Refund’
+or ‘Refundable’.
+
+``` r
+ggplot(data = hotel_bookings_v2) +
+  geom_bar(mapping = aes(x = distribution_channel, fill = distribution_channel)) +
+  facet_wrap(~deposit_type, nrow = 3) +
+  labs(title = "Number of transactions by distribution channel and deposit type", x = " ", y = " ") +
+  theme(legend.position = "none") +
+  coord_flip()
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/transactions%20distribution%20deposit-1.png)<!-- -->
+\* **Number of transactions by market segment**
+
 Is the number of bookings for each distribution type different depending
-on whether or not there was a deposit or what market segment they
-represent
-
-Goal 3: Develop promotions based on different booking distributions
-
-#### 5.3.x Monthly arrivals
+on what market segment they represent?
 
 ``` r
 ggplot(data = hotel_bookings_v2) +
-  geom_bar(mapping = aes(x = arrival_date_month, fill = arrival_date_month)) +
-  facet_wrap(~arrival_date_year) +
-  labs(title = "Number of guest arrivals per month", x = " ", y = " ") +
-  theme(axis.text.x = element_text(angle = 90),legend.position = "none")
+  geom_bar(mapping = aes(x = market_segment, fill = market_segment)) +
+  facet_wrap(~distribution_channel) +
+  labs(title = "Number of transactions by distribution channel and market segment", x = " ", y = " ") +
+  theme(legend.position = "none") +
+  coord_flip()
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/monthly%20bookings%20year-1.png)<!-- -->
-We only have full year data for 2016.
-
-Busiest months: May 2017, July 2017, August 2016
+![](hotel_bookings_case_study_files/figure-gfm/transactions%20distribution%20market%20segment-1.png)<!-- -->
 
 ``` r
-ggplot(data = hotel_bookings_v2) +
-  geom_bar(position = "dodge", mapping = aes(x = arrival_date_month, fill = hotel)) +
-  facet_wrap(~arrival_date_year) +
-  labs(title = "Number of guest arrivals per hotel type", x = " ", y = " ") +
-  theme(axis.text.x = element_text(angle = 90))
+hotel_bookings_v2 %>%
+  filter(distribution_channel == "TA/TO") %>%
+  ggplot() +
+  geom_bar(mapping = aes(x = market_segment, fill = market_segment)) +
+  labs(title = "Number of TA/TO transactions by market segment", x = " ", y = " ") +
+  theme(legend.position = "none") +
+  coord_flip()
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/monthly%20bookings%20hotel%20type-1.png)<!-- -->
-The City Hotel is more popular. Busiest month in City Hotel: May 2017
+![](hotel_bookings_case_study_files/figure-gfm/transaction%20TA%20TO%20market%20segment-1.png)<!-- -->
+
+**Goal 3: Develop promotions based on different booking distributions**
+
+- Most transactions through TA/TO
+- Most transactions ‘No Deposit’
+- Most transactions TA/TO - Online TA
+
+Online travel agency bookings where no deposit is required are the most
+popular among guests.
+
+#### 5.3.5 Cancellations
+
+- Goal 4: Prevent cancellations. What types of bookings are likely to
+  get cancelled? How many reservations were cancelled out of total? What
+  is the most frequent deposit type for cancelled reservations?
+
+Convert ‘is_canceled’ values from integer to character
+
+``` r
+hotel_bookings_v2$is_canceled <- as.character(hotel_bookings_v2$is_canceled)
+```
+
+``` r
+hotel_bookings_v2 %>%
+  group_by(hotel) %>%
+  summarize(canceled = sum(is_canceled == "1"), not_canceled = sum(is_canceled == "0"))
+```
+
+    ## # A tibble: 2 × 3
+    ##   hotel        canceled not_canceled
+    ##   <chr>           <int>        <int>
+    ## 1 City Hotel      16045        37379
+    ## 2 Resort Hotel     7976        25992
+
+``` r
+ggplot(hotel_bookings_v2) +
+  geom_bar(position = "dodge", mapping = aes(x = hotel, fill = is_canceled)) +
+  scale_fill_manual(values = c("grey", "#ef5675")) +
+  labs(title = "Cancelation rates by hotel type", x = " ", y = "No. of bookings")
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
