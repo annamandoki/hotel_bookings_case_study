@@ -1,7 +1,7 @@
 Hotel Bookings Case Study
 ================
 Anna Mándoki
-2022-11-04
+2022-11-07
 
 ## 1. Introduction
 
@@ -38,20 +38,18 @@ The following stakeholder goals will guide the analysis:
   - Is the number of bookings for each distribution type different
     depending on whether or not there was a deposit or what market
     segment they represent?
-- Goal 4: Prevent cancellations. What types of bookings are likely to
-  get cancelled? How many reservations were cancelled out of total? What
-  is the most frequent deposit type for cancelled reservations?
+- Goal 4: Prevent cancellations.
+  - How many bookings were cancelled out of total?
+  - What types of bookings are likely to get cancelled?  
+  - Cancellations by market segment and deposit type
 
 Further areas of interest:
 
-seasonality - popular month What is the Average Daily Rate (ADR)
-throughout the year?
-
-How many reservations were made by repeated guests?
-
-Which countries do customers come from? What types of customers are most
-common in each hotel? What is their preferred meal plan? Which hotel is
-preferred by adults with children?
+Which countries do customers come from? What is the Average Daily Rate
+(ADR) throughout the year? How many reservations were made by repeated
+guests? What types of customers are most common in each hotel? What is
+their preferred meal plan? Which hotel is preferred by adults with
+children?
 
 ### 2.2 Stakeholders
 
@@ -1508,33 +1506,285 @@ popular among guests.
 
 #### 5.3.5 Cancellations
 
-- Goal 4: Prevent cancellations. What types of bookings are likely to
-  get cancelled? How many reservations were cancelled out of total? What
-  is the most frequent deposit type for cancelled reservations?
+- **Goal 4: Prevent cancellations**
 
-Convert ‘is_canceled’ values from integer to character
+Convert ‘is_canceled’ values from integer to character.
 
 ``` r
 hotel_bookings_v2$is_canceled <- as.character(hotel_bookings_v2$is_canceled)
 ```
 
+- **How many bookings were cancelled out of total?**
+
 ``` r
-hotel_bookings_v2 %>%
+canceled_df <- hotel_bookings_v2 %>%
   group_by(hotel) %>%
-  summarize(canceled = sum(is_canceled == "1"), not_canceled = sum(is_canceled == "0"))
+  summarize(canceled = sum(is_canceled == "1"), not_canceled = sum(is_canceled == "0"), total = sum(hotel != " "), canceled_percent = (canceled / total)*100)
+
+print(canceled_df)
 ```
 
-    ## # A tibble: 2 × 3
-    ##   hotel        canceled not_canceled
-    ##   <chr>           <int>        <int>
-    ## 1 City Hotel      16045        37379
-    ## 2 Resort Hotel     7976        25992
+    ## # A tibble: 2 × 5
+    ##   hotel        canceled not_canceled total canceled_percent
+    ##   <chr>           <int>        <int> <int>            <dbl>
+    ## 1 City Hotel      16045        37379 53424             30.0
+    ## 2 Resort Hotel     7976        25992 33968             23.5
+
+- 30% of the City Hotel bookings were cancelled.
+- 23% of the Resort Hotel bookings were cancelled.
+- 27% of the overall bookings (24 021 of 87 392) were cancelled.
 
 ``` r
 ggplot(hotel_bookings_v2) +
   geom_bar(position = "dodge", mapping = aes(x = hotel, fill = is_canceled)) +
   scale_fill_manual(values = c("grey", "#ef5675")) +
-  labs(title = "Cancelation rates by hotel type", x = " ", y = "No. of bookings")
+  labs(title = "Cancelled vs. not cancelled bookings by hotel type", x = " ", y = "No. of bookings")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/cancellation%20bar%20chart-1.png)<!-- -->
+
+- **What is the most frequent deposit type for cancelled bookings?**
+
+``` r
+canceled_deposit_df <- hotel_bookings_v2 %>%
+  group_by(deposit_type) %>%
+  summarize(canceled = sum(is_canceled == "1"), not_canceled = sum(is_canceled == "0"), total = sum(hotel != " "), canceled_percent = (canceled / total)*100)
+
+print(canceled_deposit_df)
+```
+
+    ## # A tibble: 3 × 5
+    ##   deposit_type canceled not_canceled total canceled_percent
+    ##   <chr>           <int>        <int> <int>            <dbl>
+    ## 1 No Deposit      23012        63235 86247             26.7
+    ## 2 Non Refund        983           55  1038             94.7
+    ## 3 Refundable         26           81   107             24.3
+
+``` r
+ggplot(hotel_bookings_v2) +
+  geom_bar(position = "dodge", mapping = aes(x = deposit_type, fill = is_canceled)) +
+  scale_fill_manual(values = c("grey", "#ef5675")) +
+  labs(title = "Cancelled vs not cancelled bookings by deposit type", x = " ", y = "No. of bookings")
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/cancellations%20deposit%20type-1.png)<!-- -->
+
+``` r
+ggplot(hotel_bookings_v2) +
+  geom_bar(position = "fill", mapping = aes(x = deposit_type, fill = is_canceled)) +
+  scale_fill_manual(values = c("grey", "#ef5675")) +
+  labs(title = "Cancellation ratio by deposit type", x = " ", y = "Cancellation ratio (%)")
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/cancellation%20ratio%20deposit%20type-1.png)<!-- -->
+
+- 94% of the Non Refund bookings got cancelled!
+
+- Note: most of the booking are ‘No Deposit’.
+
+- **Cancellations by lead time**
+
+``` r
+ggplot(data = hotel_bookings_v2) +
+  geom_boxplot(mapping = aes(x = is_canceled, y = lead_time, fill = is_canceled)) +
+  scale_fill_manual(values = c("grey", "#ef5675")) +
+  labs(title = "Lead time for cancelled bookings", x = " ", y = "Lead time (in days)")
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/cancelled%20boxplot-1.png)<!-- -->
+
+``` r
+lead_time_canceled <- hotel_bookings_v2 %>%
+  group_by(is_canceled) %>%
+  summarize(avg_lead_time = mean(lead_time), min_lead_time = min(lead_time), max_lead_time = max(lead_time))
+
+print(lead_time_canceled)
+```
+
+    ## # A tibble: 2 × 4
+    ##   is_canceled avg_lead_time min_lead_time max_lead_time
+    ##   <chr>               <dbl>         <int>         <int>
+    ## 1 0                    70.1             0           737
+    ## 2 1                   106.              0           629
+
+``` r
+hotel_bookings_v2 %>%
+  group_by(hotel) %>%
+  filter(is_canceled == "1") %>%
+  ggplot() +
+  geom_boxplot(mapping = aes(x = hotel, y = lead_time, fill = hotel)) +
+  labs(title = "Lead time for cancelled bookings by hotel type", x = " ", y = "Lead time (in days)") +
+  theme(legend.position = "none")
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/lead%20time%20cancelled%20hotel%20type-1.png)<!-- -->
+
+- Cancelled bookings have a higher lead time.
+
+- Cancelled bookings have 105 days average lead time.
+
+- Lead time for cancelled bookings in City Hotel is higher.
+
+- **Cancellations by number of children**
+
+``` r
+canceled_children_df <- hotel_bookings_v2 %>%
+  group_by(children) %>%
+  summarize(canceled = sum(is_canceled == "1"), not_canceled = sum(is_canceled == "0"), total = sum(hotel != " "), canceled_percent = (canceled / total)*100)
+
+print(canceled_children_df)
+```
+
+    ## # A tibble: 5 × 5
+    ##   children canceled not_canceled total canceled_percent
+    ##      <int>    <int>        <int> <int>            <dbl>
+    ## 1        0    21036        57992 79028             26.6
+    ## 2        1     1465         3230  4695             31.2
+    ## 3        2     1503         2090  3593             41.8
+    ## 4        3       16           59    75             21.3
+    ## 5       10        1            0     1            100
+
+``` r
+hotel_bookings_v2 %>%
+  filter(children != 10) %>%
+  group_by(children) %>%
+  ggplot() +
+  geom_bar(position = "dodge", mapping = aes(x= children, fill = is_canceled)) +
+  scale_fill_manual(values = c("grey", "#ef5675")) +
+  labs(title = "Cancelled vs not cancelled bookings by number of children", x = "No. of children", y = "No. of bookings")
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+``` r
+hotel_bookings_v2 %>%
+  filter(children != 10) %>%
+  group_by(children) %>%
+  ggplot() +
+  geom_bar(position = "fill", mapping = aes(x= children, fill = is_canceled)) +
+  scale_fill_manual(values = c("grey", "#ef5675")) +
+  labs(title = "Cancellation ratio by number of children", x = "No. of children", y = "Cancellation ratio (%)")
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/cancellation%20ratio%20by%20number%20of%20children-1.png)<!-- -->
+
+- Guests with 2 children cancelled 41% of their bookings!
+
+- Note: the majority of the bookings come from guests without children.
+
+- **Cancellations by arrival date**
+
+``` r
+hotel_bookings_v2 %>%
+  group_by(arrival_date_year) %>%
+  summarize(canceled = sum(is_canceled == "1"), not_canceled = sum(is_canceled == "0"), total = sum(hotel != " "), canceled_percent = (canceled / total)*100)
+```
+
+    ## # A tibble: 3 × 5
+    ##   arrival_date_year canceled not_canceled total canceled_percent
+    ##   <chr>                <int>        <int> <int>            <dbl>
+    ## 1 2015                  2700        10609 13309             20.3
+    ## 2 2016                 11208        31183 42391             26.4
+    ## 3 2017                 10113        21579 31692             31.9
+
+``` r
+ggplot(data = hotel_bookings_v2) +
+  geom_bar(position = "dodge", mapping = aes(x = arrival_date_month, fill = is_canceled)) +
+  scale_fill_manual(values = c("grey", "#ef5675")) +
+  facet_wrap(~arrival_date_year) +
+  labs(title = "Cancelled vs not cancelled bookings 2015-2017", x = " ", y = "No. of bookings") +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/cancellations%20year%20and%20month-1.png)<!-- -->
+
+- Almost 32% of the bookings were cancelled in 2017 (Jan-Aug).
+
+- Most bookings were cancelled in July and August 2017.
+
+- **Cancellations by market segment**
+
+``` r
+hotel_bookings_v2 %>%
+  group_by(market_segment) %>%
+  summarize(canceled = sum(is_canceled == "1"), not_canceled = sum(is_canceled == "0"), total = sum(hotel != " "), canceled_percent = (canceled / total)*100)
+```
+
+    ## # A tibble: 7 × 5
+    ##   market_segment canceled not_canceled total canceled_percent
+    ##   <chr>             <int>        <int> <int>            <dbl>
+    ## 1 Aviation             45          182   227             19.8
+    ## 2 Complementary        88          614   702             12.5
+    ## 3 Corporate           510         3702  4212             12.1
+    ## 4 Direct             1736        10067 11803             14.7
+    ## 5 Groups             1335         3607  4942             27.0
+    ## 6 Offline TA/TO      2063        11826 13889             14.9
+    ## 7 Online TA         18244        33373 51617             35.3
+
+``` r
+ggplot(hotel_bookings_v2) +
+  geom_bar(position = "dodge", mapping = aes(x = market_segment, fill = is_canceled)) +
+  scale_fill_manual(values = c("grey", "#ef5675")) +
+  labs(title = "Cancelled vs. not cancelled bookings by market segment", x = " ", y = "No. of bookings")
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/cancellations%20by%20market%20segment%20chart-1.png)<!-- -->
+
+``` r
+ggplot(hotel_bookings_v2) +
+  geom_bar(position = "fill", mapping = aes(x = market_segment, fill = is_canceled)) +
+  scale_fill_manual(values = c("grey", "#ef5675")) +
+  labs(title = "Cancellation ratio by market segment", x = " ", y = "Cancellation ratio(%)")
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/cancellation%20ratio%20market%20segment-1.png)<!-- -->
+
+- 35% of the ‘Online TA’ bookings got cancelled.
+- Note: ‘Online TA’ have the highest number of bookings.
+
+#### 5.3.6 Guest country of origin
+
+Which countries / continents do hotel guests come from?
+
+``` r
+country_df <- hotel_bookings_v2 %>%
+  group_by(country_name) %>%
+  summarize(bookings = sum(hotel != " ")) %>%
+  arrange(-bookings) %>%
+  top_n(10, bookings)
+
+print(country_df)
+```
+
+    ## # A tibble: 10 × 2
+    ##    country_name   bookings
+    ##    <chr>             <int>
+    ##  1 Portugal          27449
+    ##  2 United Kingdom    10433
+    ##  3 France             8837
+    ##  4 Spain              7252
+    ##  5 Germany            5387
+    ##  6 Italy              3066
+    ##  7 Ireland            3016
+    ##  8 Belgium            2081
+    ##  9 Brazil             1995
+    ## 10 Netherlands        1911
+
+``` r
+continent_df <- hotel_bookings_v2 %>%
+  group_by(continent) %>%
+  summarize(bookings = sum(hotel != " ")) %>%
+  arrange(-bookings)
+
+print(continent_df)
+```
+
+    ## # A tibble: 6 × 2
+    ##   continent bookings
+    ##   <chr>        <int>
+    ## 1 Europe       77327
+    ## 2 Americas      4479
+    ## 3 Asia          3656
+    ## 4 Africa        1024
+    ## 5 <NA>           459
+    ## 6 Oceania        447
