@@ -1,7 +1,7 @@
 Hotel Bookings Case Study
 ================
 Anna Mándoki
-2022-11-07
+2022-11-08
 
 ## 1. Introduction
 
@@ -45,11 +45,10 @@ The following stakeholder goals will guide the analysis:
 
 Further areas of interest:
 
-Which countries do customers come from? What is the Average Daily Rate
-(ADR) throughout the year? How many reservations were made by repeated
-guests? What types of customers are most common in each hotel? What is
-their preferred meal plan? Which hotel is preferred by adults with
-children?
+- Which countries do customers come from?
+- What is the Average Daily Rate (ADR) throughout the year?
+- What is the preferred meal plan?
+- What is the preferred room type?
 
 ### 2.2 Stakeholders
 
@@ -1200,7 +1199,8 @@ ggplot(data = hotel_bookings_v2) +
 
 ![](hotel_bookings_case_study_files/figure-gfm/monthly%20bookings%20hotel%20type-1.png)<!-- -->
 
-The City Hotel is more popular. Busiest month in City Hotel: May 2017
+- The City Hotel is more popular.
+- Busiest month in City Hotel: May 2017
 
 #### 5.3.2 Who tends to book early?
 
@@ -1238,8 +1238,12 @@ ggplot(data = lead_time_hotel) +
   labs(title = "Average lead time by hotel type", x = " ", y = "Average lead time (in days)")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/plot%20avg%20lead%20time%20hotel-1.png)<!-- -->
-\* **Average lead time by number of children**
+![](hotel_bookings_case_study_files/figure-gfm/plot%20avg%20lead%20time%20hotel-1.png)<!-- --> -
+The average lead time is higher for Resort Hotel bookings.
+
+- **Average lead time by number of children**
+
+Create ‘lead_time_children’ data frame.
 
 ``` r
 lead_time_children <- hotel_bookings_v2 %>%
@@ -1258,8 +1262,9 @@ print(lead_time_children)
     ## 4        3          82.3             0           284
     ## 5       10          55              55            55
 
-Average lead time is the highest among guests with 1 child, they tend to
-book well in advance.
+- Average lead time is the highest among guests with 1 child, they tend
+  to book around 3 month in advance.
+- Average lead time is the lowest among guests with no children.
 
 ``` r
 # excluding the booking with 10 children
@@ -1295,10 +1300,11 @@ print(lead_time_distribution)
     ## 4 TA/TO                         88.6             0           629
     ## 5 Undefined                    103             103           103
 
-Observation: Guests booking through Travel Agencies or Travel Offices
-tend to book earlier.
+- Guests booking through Travel Agencies or Travel Offices tend to book
+  earlier.
 
 ``` r
+# excluding 'Undefined' as probably outlier
 lead_time_distribution %>%
   filter(distribution_channel != "Undefined") %>%
   ggplot() +
@@ -1309,8 +1315,8 @@ lead_time_distribution %>%
 
 ![](hotel_bookings_case_study_files/figure-gfm/avg%20lead%20time%20distribution-1.png)<!-- -->
 
-\*\* Observations - Goal 1: Marketing campaign targeting guests who tend
-to book early\*\*
+**Observations - Goal 1: Marketing campaign targeting guests who tend to
+book early**
 
 - Resort Hotel guests
 - Guests with 1 child
@@ -1319,9 +1325,23 @@ to book early\*\*
 #### 5.3.3 Weekend bookings
 
 A stakeholder wants to increase weekend bookings. Let’s find out what
-group of guests book the most weekend nights?
+group of guests book the most weekend nights.
 
 - **Weekend night stays by hotel type**
+
+``` r
+total_nights_h <- hotel_bookings_v2 %>%
+  group_by(hotel) %>%
+  summarize(weekend_nights = sum(stays_in_weekend_nights), week_nights = sum(stays_in_week_nights), total_nights = weekend_nights + week_nights)
+
+print(total_nights_h)
+```
+
+    ## # A tibble: 2 × 4
+    ##   hotel        weekend_nights week_nights total_nights
+    ##   <chr>                 <int>       <int>        <int>
+    ## 1 City Hotel            46595      121510       168105
+    ## 2 Resort Hotel          41258      107930       149188
 
 ``` r
 ggplot(data = hotel_bookings_v2) +
@@ -1330,10 +1350,30 @@ ggplot(data = hotel_bookings_v2) +
 ```
 
 ![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%20hotel%20type-1.png)<!-- -->
-Guests book more weekend nights in City Hotel. (City Hotel had more
-bookings in general.)
+
+- Guests book more weekend nights in City Hotel. (Note: City Hotel had
+  more bookings overall.)
 
 - **Weekend night stays by number of children**
+
+``` r
+# excluding outlier booking with 10 children
+total_nights_c <- hotel_bookings_v2 %>%
+  group_by(children) %>%
+  filter(children != 10) %>%
+  summarize(weekend_nights = sum(stays_in_weekend_nights), week_nights = sum(stays_in_week_nights), total_nights = weekend_nights + week_nights, weeked_percentage = (weekend_nights / total_nights) * 100, week_percentage = (week_nights / total_nights) * 100)
+
+print(total_nights_c)
+```
+
+    ## # A tibble: 4 × 6
+    ##   children weekend_nights week_nights total_nights weeked_percentage week_perc…¹
+    ##      <int>          <int>       <int>        <int>             <dbl>       <dbl>
+    ## 1        0          78667      205850       284517              27.6        72.4
+    ## 2        1           5126       13139        18265              28.1        71.9
+    ## 3        2           3980       10259        14239              28.0        72.0
+    ## 4        3             76         182          258              29.5        70.5
+    ## # … with abbreviated variable name ¹​week_percentage
 
 ``` r
 hotel_bookings_v2 %>%
@@ -1348,21 +1388,8 @@ hotel_bookings_v2 %>%
 
 ![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%20children-1.png)<!-- -->
 
-Guests without children book the most weekend nights.
-
-- **Weekend night stays vs week night stays**
-
-``` r
-hotel_bookings_v2 %>%
-  group_by(hotel) %>%
-  summarize(weekend_total = sum(stays_in_weekend_nights), week_total = sum(stays_in_week_nights))
-```
-
-    ## # A tibble: 2 × 3
-    ##   hotel        weekend_total week_total
-    ##   <chr>                <int>      <int>
-    ## 1 City Hotel           46595     121510
-    ## 2 Resort Hotel         41258     107930
+- Guests with no children book the most weekend nights. (Note: guests
+  with no children have the most bookings overall.)
 
 - **Weekend night stays by arrival date**
 
@@ -1403,8 +1430,8 @@ hotel_bookings_v2 %>%
   theme(axis.text.x = element_text(angle = 90), legend.position = "none")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%202017%20by%20month-1.png)<!-- -->
-Summer month are popular for weekend stays.
+![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%202017%20by%20month-1.png)<!-- --> -
+Summer month are popular in general and for weekend stays.
 
 - **Weekend night stays by market segment**
 
@@ -1419,16 +1446,17 @@ hotel_bookings_v2 %>%
   coord_flip()
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%20by%20market%20segment-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%20by%20market%20segment-1.png)<!-- --> -
 People book the most weekend nights through online travel agencies.
 
 **Goal 2: Increase weekend night bookings**
 
 weekend nights are popular among the following groups: - City Hotel
 guests (however the City Hotel had more bookings overall as well) -
-Guests without children - Guest who travel during the summer months
-(Summer month are popular in general, discounts during other seasons?) -
-Guests who book through online travel agencies
+Guests with no children (however guests with no children had the most
+booking overall) - Guest who travel during the summer months (Summer
+month are popular in general, discounts during other seasons?) - Guests
+who book through online travel agencies
 
 #### 5.3.4 Booking distributions
 
@@ -1449,9 +1477,10 @@ hotel_bookings_v2 %>%
 
 ![](hotel_bookings_case_study_files/figure-gfm/transactions%20distribution%20channel-1.png)<!-- -->
 
-- **Number of transactions by deposit type** Is the number of bookings
-  for each distribution type different depending on whether or not there
-  was a deposit?
+- **Number of transactions by deposit type**
+
+Is the number of bookings for each distribution type different depending
+on whether or not there was a deposit?
 
 we saw earlier when exploring the different categories, that most
 bookings had ‘No Deposit’ and only a few records contained ‘Non Refund’
@@ -1742,49 +1771,133 @@ ggplot(hotel_bookings_v2) +
 - 35% of the ‘Online TA’ bookings got cancelled.
 - Note: ‘Online TA’ have the highest number of bookings.
 
-#### 5.3.6 Guest country of origin
+#### 5.3.6 Further areas of interest
 
-Which countries / continents do hotel guests come from?
+- **Which countries do most hotel guests come from?**
 
 ``` r
 country_df <- hotel_bookings_v2 %>%
   group_by(country_name) %>%
-  summarize(bookings = sum(hotel != " ")) %>%
+  summarize(bookings = sum(hotel != " "), percentage = (bookings / 87392) * 100) %>%
   arrange(-bookings) %>%
   top_n(10, bookings)
 
 print(country_df)
 ```
 
-    ## # A tibble: 10 × 2
-    ##    country_name   bookings
-    ##    <chr>             <int>
-    ##  1 Portugal          27449
-    ##  2 United Kingdom    10433
-    ##  3 France             8837
-    ##  4 Spain              7252
-    ##  5 Germany            5387
-    ##  6 Italy              3066
-    ##  7 Ireland            3016
-    ##  8 Belgium            2081
-    ##  9 Brazil             1995
-    ## 10 Netherlands        1911
+    ## # A tibble: 10 × 3
+    ##    country_name   bookings percentage
+    ##    <chr>             <int>      <dbl>
+    ##  1 Portugal          27449      31.4 
+    ##  2 United Kingdom    10433      11.9 
+    ##  3 France             8837      10.1 
+    ##  4 Spain              7252       8.30
+    ##  5 Germany            5387       6.16
+    ##  6 Italy              3066       3.51
+    ##  7 Ireland            3016       3.45
+    ##  8 Belgium            2081       2.38
+    ##  9 Brazil             1995       2.28
+    ## 10 Netherlands        1911       2.19
+
+- 31% of the total bookings were made by guests from Portugal.
+- 11% of the total bookings were made by guests from the United Kingdom
+  and 10% by guests from France.
+
+``` r
+ggplot(data = country_df) +
+  geom_col(mapping = aes(x = reorder(country_name, bookings), y = bookings, fill = bookings)) +
+  labs(title = "Top 10 countries of origin", x = " ", y = "No. of bookings") +
+  theme(legend.position = "none") +
+  coord_flip()
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/top%20guest%20country%20chart-1.png)<!-- -->
+
+We can only see European countries in the top 10.
+
+Do most guests come from Europe?
 
 ``` r
 continent_df <- hotel_bookings_v2 %>%
   group_by(continent) %>%
-  summarize(bookings = sum(hotel != " ")) %>%
+  summarize(bookings = sum(hotel != " "), percentage = (bookings / 87392) * 100) %>%
   arrange(-bookings)
 
 print(continent_df)
 ```
 
-    ## # A tibble: 6 × 2
-    ##   continent bookings
-    ##   <chr>        <int>
-    ## 1 Europe       77327
-    ## 2 Americas      4479
-    ## 3 Asia          3656
-    ## 4 Africa        1024
-    ## 5 <NA>           459
-    ## 6 Oceania        447
+    ## # A tibble: 6 × 3
+    ##   continent bookings percentage
+    ##   <chr>        <int>      <dbl>
+    ## 1 Europe       77327     88.5  
+    ## 2 Americas      4479      5.13 
+    ## 3 Asia          3656      4.18 
+    ## 4 Africa        1024      1.17 
+    ## 5 <NA>           459      0.525
+    ## 6 Oceania        447      0.511
+
+- 88% of the bookings originated from Europe.
+
+``` r
+continent_df %>%
+  filter(continent != "NA") %>%
+  ggplot() +
+  geom_col(mapping = aes(x = reorder(continent, bookings), y = bookings, fill = bookings)) +
+  labs(title = "88% of the guests came from European countries", x = " ", y = "No. of bookings") +
+  theme(legend.position = "none") +
+  coord_flip()
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/guest%20continent%20chart-1.png)<!-- -->
+
+- **What is the Average Daily Rate (ADR) throughout the year?**
+
+Monthly ADR between July 2015 - Aug 2017 excluding cancelled bookings.
+
+``` r
+hotel_bookings_v2 %>%
+  filter(is_canceled == "0") %>%
+  ggplot() +
+  geom_boxplot(mapping = aes(x = arrival_date_month, y = adr, fill = hotel)) +
+  facet_wrap(~hotel) +
+  labs(title = "Average Daily Rate (ADR) by hotel type", x = " ", y = "ADR") +
+  theme(axis.text.x = element_text(angle= 90), legend.position = "none")
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/monthly%20adr-1.png)<!-- --> -
+ADR mostly consistent throughout the year in City Hotel - ADR higher
+during the summer months in the Resort Hotel
+
+- **What is the preferred meal plan?**
+
+``` r
+# excluding cancelled bookings
+hotel_bookings_v2 %>%
+  filter(is_canceled == "0") %>%
+  ggplot() +
+  geom_bar(position = "dodge", mapping = aes(x = meal, fill = hotel)) +
+  labs(title = " Preferred meal plan by hotel type", x = "Meal plan", y = "No. of bookings")
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/meal%20plan%20by%20hotel%20chart-1.png)<!-- --> -
+Bad & Breakfast is the most popular meal plan for both hotel types. -
+Half Board is more popular in Resort Hotel. - Self-catering (no meal) is
+more popular in City Hotel.
+
+- **What is the preferred room type?**
+
+``` r
+# excluding cancelled bookings
+hotel_bookings_v2 %>%
+  filter(is_canceled == "0") %>%
+  ggplot() +
+  geom_bar(position = "dodge", mapping = aes(x = reserved_room_type, fill = hotel)) +
+  labs(title = " Preferred room type by hotel", x = "Room type", y = "No. of bookings")
+```
+
+![](hotel_bookings_case_study_files/figure-gfm/room%20type%20by%20hotel-1.png)<!-- -->
+
+- Room ‘A’ is the most popular in both hotels.
+- Room ‘B’ only available in City Hotel.
+- Room ‘C’ and ‘H’ only available in Resort Hotel.
+- Room ‘E’ and ‘G’ more popular in Resort Hotel.
