@@ -1,37 +1,46 @@
 Hotel Bookings Case Study
 ================
 Anna Mándoki
-2022-11-08
+2022-11-09
 
 ## 1. Introduction
 
 This case study was inspired by a series of exercises related to the
 ‘hotel_bookings’ dataset I worked through while I was doing the Google
 Data Analytics Professional Certificate course. The dataset contains
-booking information for a city hotel and a resort hotel.
+booking information a city hotel and a resort hotel, and it is
+recommended on
+[Kaggle](https://www.kaggle.com/datasets/jessemostipak/hotel-booking-demand)
+as an ideal dataset to practice exploratory data analysis (EDA).
 
-My goal with this project is to dive deeper into the data.
+My goal with this project is to dive deeper into the data and build a
+case study similar to the [Cyclistic Bike-share Case
+Study](https://github.com/annamandoki/cyclistic_case_study) and the
+[Bellabeat Case
+Study](https://github.com/annamandoki/bellabeat_case_study) I did
+previously.
 
-I am assuming the role of a junior data analyst working on the marketing
-analytics team at an imaginary hotel booking company.
-
-I am going to perform different data cleaning tasks and conduct
-exploratory data analysis (EDA) on the dataset.
+In this project I am assuming the role of a junior data analyst working
+on the marketing analytics team at an imaginary hotel booking company. I
+am going to perform different data cleaning tasks and conduct
+exploratory data analysis (EDA) on the dataset in order to identify
+hotel booking trends to help shape the company’s marketing strategy
+towards a set of goals.
 
 ## 2. Ask Phase
 
 ### 2.1 Business Objective
 
-Identify trends in hotel bookings to help shape the future marketing
-strategy of the company.
-
-The following stakeholder goals will guide the analysis:
+The following stakeholder goals and business questions will guide the
+analysis:
 
 - Goal 1: Marketing campaign to target people who book early.
   - What group of guests tend to book early?
+  - What are the main factors that influence lead time?
 - Goal 2: Increase weekend bookings, an important source of revenue for
   the hotel.
   - What group of guests book the most weekend nights?
+  - Which season is popular for weekend stays?
 - Goal 3: Develop promotions based on different booking distributions.
   - How many of the transactions are occurring for each different
     distribution type?
@@ -40,15 +49,14 @@ The following stakeholder goals will guide the analysis:
     segment they represent?
 - Goal 4: Prevent cancellations.
   - How many bookings were cancelled out of total?
-  - What types of bookings are likely to get cancelled?  
-  - Cancellations by market segment and deposit type
+  - What types of bookings are likely to get cancelled?
 
 Further areas of interest:
 
 - Which countries do customers come from?
 - What is the Average Daily Rate (ADR) throughout the year?
-- What is the preferred meal plan?
-- What is the preferred room type?
+- What is the preferred meal plan in each hotel?
+- What is the preferred room type in each hotel?
 
 ### 2.2 Stakeholders
 
@@ -69,11 +77,11 @@ The dataset consists of one csv file: ‘hotel_bookings.csv’
 
 It contains information on bookings due to arrive between the 1st of
 July of 2015 and the 31st of August 2017, including bookings that
-effectively arrived and bookings that were canceled.
+effectively arrived and bookings that were cancelled.
 
 The file contains 32 columns with information such as when the booking
-was made, length of stay, the number of adults, children, and/or babies,
-and the number of available parking spaces, among other things.
+was made, lead time, the number of adults, children, and/or babies, meal
+plan and guest country of origin among other things.
 
 ### 3.2 Dataset location & licence
 
@@ -93,12 +101,13 @@ for [\#TidyTuesday during the week of February 11th,
 The data was released under this
 [licence](https://creativecommons.org/licenses/by/4.0/)
 
-Since this is real hotel data, all data elements pertaining hotel or
-costumer identification were deleted.
+Since this is real hotel data, all data elements concerning hotel, agent
+or guest identification were deleted.
 
 ### 3.3 Data dictionary
 
 Detailed description of the variables used in the dataset:
+[Source](https://www.sciencedirect.com/science/article/pii/S2352340918315191#t0005)
 
 - hotel: type of hotel - Resort hotel or City Hotel
 - is_canceled: value indicating if the booking was canceled (1) or not
@@ -123,7 +132,7 @@ Detailed description of the variables used in the dataset:
   - HB – Half board (breakfast and one other meal – usually dinner)
   - FB – Full board (breakfast, lunch and dinner)
 - country: country of origin. Categories are represented in the [ISO
-  3166–3:2013 format](https://www.iso.org/obp/ui/#search)
+  3166–3:2013 format](https://www.iso.org/iso-3166-country-codes.html)
 - market_segment: market segment designation
   - TA = Travel Agents
   - TO = Tour Operators
@@ -189,7 +198,7 @@ Detailed description of the variables used in the dataset:
   booking data.
 - Original: The data originates from real hotels, however pre-processing
   has been made, two datasets were merged into one.
-- Comprehensive: The is comprehensive, contains all critical
+- Comprehensive: The data is comprehensive, contains all critical
   information.
 - Current: The data is not current, it is 7 years old as of November
   2022.
@@ -199,10 +208,10 @@ Detailed description of the variables used in the dataset:
 Data privacy is ensured: all personally identifying information has been
 removed from the data.
 
-### 3.5 Is the data helpful in answering the question in the business task?
+### 3.5 Is the data helpful in answering the questions in the business task?
 
 The dataset contains all critical information to identify patterns in
-bookings.
+bookings to answer the business questions.
 
 ### 3.6 Key steps taken in the Prepare Phase
 
@@ -216,8 +225,8 @@ bookings.
 
 ### 4.1 Tools
 
-After taking a first look at the data in LibreOffice Calc, I switched to
-RStudio Desktop.
+After taking a first look at the data in LibreOffice Calc, I am
+switching to RStudio Desktop.
 
 ### 4.2 Setting up my environment
 
@@ -264,6 +273,9 @@ hotel_bookings <- read.csv("hotel_bookings.csv")
 ```
 
 ### 4.4 Viewing the data frame
+
+Take a look at the data frame using the `glimpse()` and `head()`
+functions.
 
 ``` r
 glimpse(hotel_bookings)
@@ -437,7 +449,8 @@ sum(is.na(hotel_bookings_v2))
 
     ## [1] 4
 
-Find out in which column(s) the NA values are using `map()`
+Find out in which column(s) the NA values are using the `map()`
+function.
 
 ``` r
 map(hotel_bookings_v2, ~sum(is.na(.)))
@@ -620,7 +633,7 @@ but rather as “not applicable”. For example, if a booking “Agent” is
 defined as “NULL” it means that the booking did not came from a travel
 agent.*
 
-For now I leave it as is.
+Noted. I leave them as they are.
 
 #### 4.5.6 Check categories
 
@@ -644,7 +657,7 @@ Create plot for a quick visual representation.
 ``` r
 ggplot(data = hotel_bookings_v2) +
   geom_bar(mapping = aes(x = hotel, fill = hotel)) +
-  labs(title = "Hotel types", x = " ", y = " ") +
+  labs(title = "Hotel types", x = " ", y = "No. of bookings ") +
   theme(legend.position = "none")
 ```
 
@@ -681,7 +694,7 @@ Create visual.
 ``` r
 ggplot(data = hotel_bookings_v2) +
   geom_bar(mapping = aes(x = meal, fill = meal)) +
-  labs(title = "Meal types", x = " ", y = " ") +
+  labs(title = "Meal types", x = " ", y = "No. of bookings ") +
   theme(legend.position = "none")
 ```
 
@@ -701,7 +714,7 @@ unique(hotel_bookings_v2$market_segment)
 ``` r
 ggplot(data = hotel_bookings_v2) +
   geom_bar(mapping = aes(x = market_segment, fill = market_segment)) +
-  labs(title = "Market segments", x = " ", y = " ") +
+  labs(title = "Market segments", x = " ", y = "No. of bookings ") +
   theme(legend.position = "none") +
   coord_flip()
 ```
@@ -728,11 +741,38 @@ check availability.*
 ``` r
 ggplot(data = hotel_bookings_v2) +
   geom_bar(mapping = aes(x = distribution_channel, fill = distribution_channel)) +
-  labs(title = "Distribution channels", x = " ", y = " ") +
+  labs(title = "Distribution channels", x = " ", y = "No. of bookings ") +
   theme(legend.position = "none")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/distribution%20channels%20bar%20chart-1.png)<!-- -->
+
+It seems like there are no or only a very few bookings with ‘Undefined’
+distribution channel. Let’s find out:
+
+``` r
+hotel_bookings_v2 %>%
+  filter(distribution_channel == "Undefined")
+```
+
+    ##          hotel is_canceled lead_time arrival_date_year arrival_date_month
+    ## 1 Resort Hotel           0       103              2015               July
+    ##   arrival_date_week_number arrival_date_day_of_month stays_in_weekend_nights
+    ## 1                       28                         5                       2
+    ##   stays_in_week_nights adults children babies meal country market_segment
+    ## 1                    3      2        1      0   HB     PRT         Direct
+    ##   distribution_channel is_repeated_guest previous_cancellations
+    ## 1            Undefined                 0                      0
+    ##   previous_bookings_not_canceled reserved_room_type assigned_room_type
+    ## 1                              0                  A                  A
+    ##   booking_changes deposit_type agent company days_in_waiting_list customer_type
+    ## 1               0   No Deposit  NULL    NULL                    0     Transient
+    ##     adr required_car_parking_spaces total_of_special_requests
+    ## 1 112.7                           1                         2
+    ##   reservation_status reservation_status_date
+    ## 1          Check-Out              2015-07-10
+
+There is only one such booking.
 
 - **deposit_type**
 
@@ -750,11 +790,12 @@ unique(hotel_bookings_v2$deposit_type)
 ``` r
 ggplot(data = hotel_bookings_v2) +
   geom_bar(mapping = aes(x = deposit_type, fill = deposit_type)) +
-  labs(title = "Deposit types", x = " ", y = " ") +
+  labs(title = "Deposit types", x = " ", y = "No. of bookings") +
   theme(legend.position = "none")
 ```
 
 ![](hotel_bookings_case_study_files/figure-gfm/bar%20chart%20deposit%20type-1.png)<!-- -->
+No Deposit for a significant number of bookings.
 
 - **customer_type**
 
@@ -772,11 +813,14 @@ unique(hotel_bookings_v2$customer_type)
 ``` r
 ggplot(data = hotel_bookings_v2) +
   geom_bar(mapping = aes(x = customer_type, fill = customer_type)) +
-  labs(title = "Customer types", x = " ", y = " ") +
+  labs(title = "Customer types", x = " ", y = "No. of bookings ") +
   theme(legend.position = "none")
 ```
 
 ![](hotel_bookings_case_study_files/figure-gfm/bar%20chart%20customer%20type-1.png)<!-- -->
+
+Transient (not part of a group or contract) is the most frequent
+customer type.
 
 - **reservation_status**
 
@@ -793,22 +837,27 @@ unique(hotel_bookings_v2$reservation_status)
 ``` r
 ggplot(data = hotel_bookings_v2) +
   geom_bar(mapping = aes(x = reservation_status, fill = reservation_status)) +
-  labs(title = "Reservation status", x = " ", y = " ") +
+  labs(title = "Reservation status", x = " ", y = "No. of bookings ") +
   theme(legend.position = "none")
 ```
 
 ![](hotel_bookings_case_study_files/figure-gfm/bar%20chart%20reservation%20status-1.png)<!-- -->
 
-I modified the ‘Undefined’ category in the ‘meal’ column by merging it
-into the category ‘SC’. Categories in the other columns were fine.
+**Notes on categories**
+
+- Modified the ‘Undefined’ category in the ‘meal’ column by merging it
+  into the category ‘SC’.
+- Categories in the other columns were fine, no further transformation
+  made.
 
 #### 4.5.7 Check countries & create column for continents
 
 It would be convenient for our analysis later if we had a column with
 whole country names and a column for continents.
 
-Let’s start with checking the ‘country’ column that contains country ISO
-3166-1 alphe 3 codes. All code should be 3 digits long.
+Let’s start with checking the ‘country’ column that contains country
+[ISO 3166-3:2013](https://www.iso.org/iso-3166-country-codes.html)
+codes. All code should be 3 digits long.
 
 ``` r
 unique(hotel_bookings_v2$country)
@@ -1050,7 +1099,7 @@ glimpse(hotel_bookings_v2)
 
 To be able to showcase monthly data, we need ‘arrival_date_month’
 ordered. We can either extract the month from the full date we just
-created or convert the month values for factor.
+created or convert the month values to factor.
 
 ``` r
 hotel_bookings_v2 <- hotel_bookings_v2 %>%
@@ -1101,7 +1150,7 @@ glimpse(hotel_bookings_v2)
 
 - Set up RStudio Desktop environment, loaded the necessary packages
 - Imported csv file, created data frame ‘hotel_bookings’
-- Viewed data with `glimpse()`, `head()`
+- Viewed data with `glimpse()`and `head()`
 - Cleaned and transformed data:
   - created new data frame ‘hotel_bookings_v2’
   - checked and removed duplicates
@@ -1111,8 +1160,12 @@ glimpse(hotel_bookings_v2)
   - created columns ‘country_name’ and ‘continent’ from ‘country’, noted
     unmatched values
   - created column ‘arrival_date_full’
+  - converted ‘arrival_date_month’ to factor
 
 ## 5. Analyze Phase
+
+Data frame used in the Analyze Phase: ‘hotel_bookings_v2’ including all
+distinct bookings (realized and cancelled).
 
 ### 5.1 Summary statistics
 
@@ -1161,11 +1214,39 @@ hotel_bookings_v2 %>%
   (2 years).
 - The maximum number of adults in a single booking was 55, seems a
   little bit odd, but not impossible (company event, wedding, big family
-  gathering). The minimum number of adults is 0, seems strange.
+  gathering). The minimum number of adults is 0, seems strange, probably
+  NA.
 - The maximum number of children in a single booking was 10, which is
   also a little bit odd, but again, not impossible.
-- The difference in average daily rates is quite significant: -6.38 and
-  5400.
+- The difference in average daily rates is quite significant: -6.38
+  and 5400. Possible outlier.
+
+``` r
+hotel_bookings_v2 %>%
+  filter(adr == 5400)
+```
+
+    ##        hotel is_canceled lead_time arrival_date_full arrival_date_year
+    ## 1 City Hotel           1        35        2016-03-25              2016
+    ##   arrival_date_month arrival_date_week_number arrival_date_day_of_month
+    ## 1              March                       13                        25
+    ##   stays_in_weekend_nights stays_in_week_nights adults children babies meal
+    ## 1                       0                    1      2        0      0   BB
+    ##   country market_segment distribution_channel is_repeated_guest
+    ## 1     PRT  Offline TA/TO                TA/TO                 0
+    ##   previous_cancellations previous_bookings_not_canceled reserved_room_type
+    ## 1                      0                              0                  A
+    ##   assigned_room_type booking_changes deposit_type agent company
+    ## 1                  A               1   Non Refund    12    NULL
+    ##   days_in_waiting_list customer_type  adr required_car_parking_spaces
+    ## 1                    0     Transient 5400                           0
+    ##   total_of_special_requests reservation_status reservation_status_date
+    ## 1                         0           Canceled              2016-02-19
+    ##   country_name continent
+    ## 1     Portugal    Europe
+
+The booking with the average daily rate of 5400 was cancelled, probably
+an error.
 
 ### 5.3 Data visualizations
 
@@ -1215,7 +1296,7 @@ ggplot(data = hotel_bookings_v2) +
   labs(title = "Lead time by hotel type", x = "Lead time (days)", y = " ")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 \* **Average lead time by hotel type**
 
 ``` r
@@ -1417,7 +1498,8 @@ hotel_bookings_v2 %>%
   theme(legend.position = "none")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%202016%20by%20week-1.png)<!-- --> -
+Week 27, 32, 33 were the most popular for weekend night stays.
 
 ``` r
 hotel_bookings_v2 %>%
@@ -1454,13 +1536,29 @@ People book the most weekend nights through online travel agencies.
 weekend nights are popular among the following groups: - City Hotel
 guests (however the City Hotel had more bookings overall as well) -
 Guests with no children (however guests with no children had the most
-booking overall) - Guest who travel during the summer months (Summer
-month are popular in general, discounts during other seasons?) - Guests
-who book through online travel agencies
+booking overall) - Guest who travel during the summer months - week 27,
+32, 33 (Summer month are popular in general, discounts during other
+seasons?) - Guests who book through online travel agencies
 
 #### 5.3.4 Booking distributions
 
 - **Number of transactions by distribution type**
+
+``` r
+hotel_bookings_v2 %>%
+  group_by(distribution_channel) %>%
+  summarize(transactions = sum(distribution_channel != " "), percentage = (transactions / 87392) * 100) %>%
+  arrange(-percentage)
+```
+
+    ## # A tibble: 5 × 3
+    ##   distribution_channel transactions percentage
+    ##   <chr>                       <int>      <dbl>
+    ## 1 TA/TO                       69141   79.1    
+    ## 2 Direct                      12988   14.9    
+    ## 3 Corporate                    5081    5.81   
+    ## 4 GDS                           181    0.207  
+    ## 5 Undefined                       1    0.00114
 
 ``` r
 # excluding Undefined
@@ -1470,7 +1568,7 @@ hotel_bookings_v2 %>%
   filter(distribution_channel != "Undefined") %>%
   ggplot() +
   geom_col(mapping = aes(x = reorder(distribution_channel, transactions), y = transactions, fill = transactions)) +
-  labs(title = "Number of transactions by distribution channel", x = " ", y = " ") +
+  labs(title = "Number of transactions by distribution channel", x = " ", y = "No. of transactions ") +
   theme(legend.position = "none") +
   coord_flip()
 ```
@@ -1487,10 +1585,24 @@ bookings had ‘No Deposit’ and only a few records contained ‘Non Refund’
 or ‘Refundable’.
 
 ``` r
+hotel_bookings_v2 %>%
+  group_by(deposit_type) %>%
+  summarize(transactions = sum(deposit_type != " "), percentage = (transactions / 87392) * 100) %>%
+  arrange(-percentage)
+```
+
+    ## # A tibble: 3 × 3
+    ##   deposit_type transactions percentage
+    ##   <chr>               <int>      <dbl>
+    ## 1 No Deposit          86247     98.7  
+    ## 2 Non Refund           1038      1.19 
+    ## 3 Refundable            107      0.122
+
+``` r
 ggplot(data = hotel_bookings_v2) +
   geom_bar(mapping = aes(x = distribution_channel, fill = distribution_channel)) +
   facet_wrap(~deposit_type, nrow = 3) +
-  labs(title = "Number of transactions by distribution channel and deposit type", x = " ", y = " ") +
+  labs(title = "Number of transactions by distribution channel and deposit type", x = " ", y = "No. of transactions ") +
   theme(legend.position = "none") +
   coord_flip()
 ```
@@ -1514,6 +1626,24 @@ ggplot(data = hotel_bookings_v2) +
 
 ``` r
 hotel_bookings_v2 %>%
+  group_by(market_segment) %>%
+  summarize(transactions = sum(distribution_channel == "TA/TO"), percentage = (transactions / 69141) * 100) %>%
+  arrange(-percentage)
+```
+
+    ## # A tibble: 7 × 3
+    ##   market_segment transactions percentage
+    ##   <chr>                 <int>      <dbl>
+    ## 1 Online TA             51316    74.2   
+    ## 2 Offline TA/TO         13734    19.9   
+    ## 3 Groups                 3622     5.24  
+    ## 4 Direct                  229     0.331 
+    ## 5 Corporate               155     0.224 
+    ## 6 Complementary            75     0.108 
+    ## 7 Aviation                 10     0.0145
+
+``` r
+hotel_bookings_v2 %>%
   filter(distribution_channel == "TA/TO") %>%
   ggplot() +
   geom_bar(mapping = aes(x = market_segment, fill = market_segment)) +
@@ -1522,7 +1652,7 @@ hotel_bookings_v2 %>%
   coord_flip()
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/transaction%20TA%20TO%20market%20segment-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/transaction%20TA%20TO%20market%20segment%20chart-1.png)<!-- -->
 
 **Goal 3: Develop promotions based on different booking distributions**
 
@@ -1546,11 +1676,9 @@ hotel_bookings_v2$is_canceled <- as.character(hotel_bookings_v2$is_canceled)
 - **How many bookings were cancelled out of total?**
 
 ``` r
-canceled_df <- hotel_bookings_v2 %>%
+hotel_bookings_v2 %>%
   group_by(hotel) %>%
   summarize(canceled = sum(is_canceled == "1"), not_canceled = sum(is_canceled == "0"), total = sum(hotel != " "), canceled_percent = (canceled / total)*100)
-
-print(canceled_df)
 ```
 
     ## # A tibble: 2 × 5
@@ -1575,11 +1703,9 @@ ggplot(hotel_bookings_v2) +
 - **What is the most frequent deposit type for cancelled bookings?**
 
 ``` r
-canceled_deposit_df <- hotel_bookings_v2 %>%
+hotel_bookings_v2 %>%
   group_by(deposit_type) %>%
   summarize(canceled = sum(is_canceled == "1"), not_canceled = sum(is_canceled == "0"), total = sum(hotel != " "), canceled_percent = (canceled / total)*100)
-
-print(canceled_deposit_df)
 ```
 
     ## # A tibble: 3 × 5
@@ -1623,11 +1749,9 @@ ggplot(data = hotel_bookings_v2) +
 ![](hotel_bookings_case_study_files/figure-gfm/cancelled%20boxplot-1.png)<!-- -->
 
 ``` r
-lead_time_canceled <- hotel_bookings_v2 %>%
+hotel_bookings_v2 %>%
   group_by(is_canceled) %>%
   summarize(avg_lead_time = mean(lead_time), min_lead_time = min(lead_time), max_lead_time = max(lead_time))
-
-print(lead_time_canceled)
 ```
 
     ## # A tibble: 2 × 4
@@ -1635,6 +1759,9 @@ print(lead_time_canceled)
     ##   <chr>               <dbl>         <int>         <int>
     ## 1 0                    70.1             0           737
     ## 2 1                   106.              0           629
+
+- Cancelled bookings have a higher lead time.
+- Cancelled bookings have 105 days average lead time.
 
 ``` r
 hotel_bookings_v2 %>%
@@ -1646,13 +1773,20 @@ hotel_bookings_v2 %>%
   theme(legend.position = "none")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/lead%20time%20cancelled%20hotel%20type-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/lead%20time%20cancelled%20hotel%20type%20chart-1.png)<!-- -->
 
-- Cancelled bookings have a higher lead time.
+``` r
+hotel_bookings_v2 %>%
+  group_by(hotel) %>%
+  filter(is_canceled == "1") %>%
+  summarize(avg_lead_time = mean(lead_time), min_lead_time = min(lead_time), max_lead_time = max(lead_time))
+```
 
-- Cancelled bookings have 105 days average lead time.
-
-- Lead time for cancelled bookings in City Hotel is higher.
+    ## # A tibble: 2 × 4
+    ##   hotel        avg_lead_time min_lead_time max_lead_time
+    ##   <chr>                <dbl>         <int>         <int>
+    ## 1 City Hotel            102.             0           629
+    ## 2 Resort Hotel          114.             0           471
 
 - **Cancellations by number of children**
 
@@ -1683,7 +1817,7 @@ hotel_bookings_v2 %>%
   labs(title = "Cancelled vs not cancelled bookings by number of children", x = "No. of children", y = "No. of bookings")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ``` r
 hotel_bookings_v2 %>%
@@ -1729,26 +1863,28 @@ ggplot(data = hotel_bookings_v2) +
 
 - Almost 32% of the bookings were cancelled in 2017 (Jan-Aug).
 
-- Most bookings were cancelled in July and August 2017.
+- Most bookings were cancelled in July and August 2017.(Note: most
+  bookings during summer)
 
 - **Cancellations by market segment**
 
 ``` r
 hotel_bookings_v2 %>%
   group_by(market_segment) %>%
-  summarize(canceled = sum(is_canceled == "1"), not_canceled = sum(is_canceled == "0"), total = sum(hotel != " "), canceled_percent = (canceled / total)*100)
+  summarize(canceled = sum(is_canceled == "1"), not_canceled = sum(is_canceled == "0"), total = sum(hotel != " "), canceled_percent = (canceled / total)*100) %>%
+  arrange(-canceled_percent)
 ```
 
     ## # A tibble: 7 × 5
     ##   market_segment canceled not_canceled total canceled_percent
     ##   <chr>             <int>        <int> <int>            <dbl>
-    ## 1 Aviation             45          182   227             19.8
-    ## 2 Complementary        88          614   702             12.5
-    ## 3 Corporate           510         3702  4212             12.1
-    ## 4 Direct             1736        10067 11803             14.7
-    ## 5 Groups             1335         3607  4942             27.0
-    ## 6 Offline TA/TO      2063        11826 13889             14.9
-    ## 7 Online TA         18244        33373 51617             35.3
+    ## 1 Online TA         18244        33373 51617             35.3
+    ## 2 Groups             1335         3607  4942             27.0
+    ## 3 Aviation             45          182   227             19.8
+    ## 4 Offline TA/TO      2063        11826 13889             14.9
+    ## 5 Direct             1736        10067 11803             14.7
+    ## 6 Complementary        88          614   702             12.5
+    ## 7 Corporate           510         3702  4212             12.1
 
 ``` r
 ggplot(hotel_bookings_v2) +
@@ -1864,9 +2000,11 @@ hotel_bookings_v2 %>%
   theme(axis.text.x = element_text(angle= 90), legend.position = "none")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/monthly%20adr-1.png)<!-- --> -
-ADR mostly consistent throughout the year in City Hotel - ADR higher
-during the summer months in the Resort Hotel
+![](hotel_bookings_case_study_files/figure-gfm/monthly%20adr-1.png)<!-- -->
+
+- ADR mostly consistent throughout the year in City Hotel
+
+- ADR higher during the summer months in the Resort Hotel
 
 - **What is the preferred meal plan?**
 
@@ -1879,10 +2017,13 @@ hotel_bookings_v2 %>%
   labs(title = " Preferred meal plan by hotel type", x = "Meal plan", y = "No. of bookings")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/meal%20plan%20by%20hotel%20chart-1.png)<!-- --> -
-Bad & Breakfast is the most popular meal plan for both hotel types. -
-Half Board is more popular in Resort Hotel. - Self-catering (no meal) is
-more popular in City Hotel.
+![](hotel_bookings_case_study_files/figure-gfm/meal%20plan%20by%20hotel%20chart-1.png)<!-- -->
+
+- Bad & Breakfast is the most popular meal plan for both hotel types.
+
+- Half Board is more popular in Resort Hotel.
+
+- Self-catering (no meal) is more popular in City Hotel.
 
 - **What is the preferred room type?**
 
@@ -1901,3 +2042,200 @@ hotel_bookings_v2 %>%
 - Room ‘B’ only available in City Hotel.
 - Room ‘C’ and ‘H’ only available in Resort Hotel.
 - Room ‘E’ and ‘G’ more popular in Resort Hotel.
+
+### 5.4 Analysis Summary
+
+#### 5.4.1 Key steps take in the Analyze Phase
+
+- Summary statistics on selected columns
+- Data visualizations
+  - Data timeline - number of guest arrivals per month and year
+  - Early bookings - lead time, average lead time by hotel, number of
+    children, distribution channel
+  - Weekend bookings - by hotel type, number of children, arrival date,
+    market segment
+  - Booking distributions - transactions by distribution channel and
+    deposit type, distribution and market segment
+  - Cancellations - total cancellations, cancellations by hotel, deposit
+    type, lead time, number of children, arrival date, market segment
+  - Further areas of interest: top 10 guest countries of origin, guest
+    continent of origin, average daily rate, preferred meal plan,
+    preferred room type
+
+#### 5.4.2 Key takeaways
+
+- **Data scope and seasonality**
+
+- The data contains bookings from July 2015 - August 2017; 6 months of
+  data for 2015, full year data for 2016 and 8 months data for 2017.
+
+- Busiest months: May 2017, July 2017, August 2016
+
+- The City Hotel had more bookings overall.
+
+- Busiest month in City Hotel: May 2017
+
+- **Goal 1: Marketing campaign to target people who book early.**
+
+What group of guests tend to book early?
+
+- On average, guests book 80 days (2,5 month) in advance.
+- Guests with 1 child book earlier on average: 90 days (3 month) in
+  advance.
+- Resort Hotel bookings are made more days in advance than City Hotel
+  bookings; 83 days compared to 78 days.
+- Guests with no children book the least in advance; 79 days on average.
+- Guests booking through Travel Agencies or Travel Offices tend to book
+  earlier; 87 days in advance.
+
+What are the main factors that influence lead time?
+
+- Hotel type, number of children, distribution channel.
+
+- **Goal 2: Increase weekend bookings.**
+
+What group of guests book the most weekend nights?
+
+- City Hotel guests book more weekend night. (Note: City Hotel had more
+  bookings overall.)
+- Guests with no children book the most weekend nights. (Note: guests
+  with no children have the most bookings overall.)  
+- Guest who book through online travel agencies stay the most weekend
+  nights.
+
+Which season is popular for weekend stays?
+
+- Summer month - July and August are popular in general and for weekend
+  stays.
+
+- Week 27, 32, 33 were the most popular in 2016 for weekend night stays.
+  discounts during other seasons?
+
+- **Goal 3: Develop promotions based on different booking
+  distributions.**
+
+How many of the transactions are occurring for each different
+distribution type?
+
+- 79% of the transactions occurred through travel agencies or travel
+  offices (TA/TO), 14% were direct transactions, 5% corporate and only
+  0.2% through global distribution systems (GDS).
+
+Is the number of bookings for each distribution type different depending
+on whether or not there was a deposit or what market segment they
+represent?
+
+- Almost 90% of the booking were ‘No Deposit’
+
+- 74% of the ‘TA/TO’ transactions were online and approximately 20%
+  offline.
+
+- Online travel agency bookings where no deposit is required are the
+  most popular among guests.
+
+- **Goal 4: Prevent cancellations.**
+
+How many bookings were cancelled out of total?
+
+- 30% of the City Hotel bookings were cancelled.
+- 23% of the Resort Hotel bookings were cancelled.
+- 27% of the overall bookings (24 021 of 87 392) were cancelled.
+
+What types of bookings are likely to get cancelled?
+
+- 94% of the Non Refund bookings got cancelled!
+
+- 27% of the ‘No Deposit’ bookings were cancelled (Note: almost 90% of
+  the bookings are ‘No Deposit’)
+
+- Bookings made approximately 3,5 month in advance tend to get
+  cancelled; the average lead time of cancelled bookings was 105 days
+
+- Guests with 2 children cancelled 41% of their bookings!
+
+- Guests with no children cancelled 27% of their bookings. (Note: the
+  majority of the bookings come from guests without children.)
+
+- Almost 32% of the bookings were cancelled in 2017 (Note: data from
+  Jan-Aug).
+
+- Most bookings were cancelled in July and August 2017.(Note: most
+  bookings during summer)
+
+- 35% of the ‘Online TA’ bookings got cancelled. 27% of the ‘Groups’
+  bookings got cancelled. (Note: ‘Online TA’ have the highest number of
+  bookings.)
+
+- **Further areas of interest:**
+
+Which countries do customers come from?
+
+- 31% of the total bookings were made by guests from Portugal.
+- 11% of the total bookings were made by guests from the United Kingdom
+  and 10% by guests from France.
+- 88% of the bookings originated from Europe.
+
+What is the Average Daily Rate (ADR) throughout the year?
+
+- ADR mostly consistent throughout the year in City Hotel
+- ADR higher during the summer months in the Resort Hotel
+
+What is the preferred meal plan in each hotel?
+
+- Bad & Breakfast is the most popular meal plan for both hotel types.
+- Half Board is more popular in Resort Hotel.
+- Self-catering (no meal) is more popular in City Hotel.
+
+What is the preferred room type in each hotel?
+
+- Room ‘A’ is the most popular in both hotels.
+- Room ‘B’ only available in City Hotel.
+- Room ‘C’ and ‘H’ only available in Resort Hotel.
+- Room ‘E’ and ‘G’ more popular in Resort Hotel.
+
+## 6. Share and Act Phases
+
+Top recommendations
+
+- Goal 1: Marketing campaign to target people who book early.
+
+Online “Early Bird Discounts”
+
+- Goal 2: Increase weekend bookings.
+
+Online, romantic weekend for couples Shoulder season discounts
+
+- Goal 3: Develop promotions based on different booking distributions
+
+Online travel agencies, can increase direct bookings as well In terms of
+market segments and distribution channels, TA and TO have shown to be
+the strongest, followed by the direct channel with the hotel. In the
+last case, the use of this channel could be incentivized by means of a
+special offer.
+
+- Goal 4: Prevent cancellations.
+
+The fact that a large portion of these reservations did not have a
+deposit indicates that customers are more inclined to cancel a
+reservation when they are not required to put down a deposit. The
+company should change the cancellation policy to make it a bit more
+restrictive. Additionally, it should conduct a brief survey of customers
+when they cancel a reservation to find out why they do so.
+
+we could send the customer an e-mail to confirm their booking. If they
+are not able confirm the booking would be deemed cancelled and the
+customer has to reserve a new booking. This would ensure a more vigilant
+booking method on part of the hotel and would also reduct the number of
+false bookings.
+
+Further recommendations
+
+loyalty strategy could be created, especially for clients coming from
+Portugal, as they are the main clients for both hotels.
+
+Finally, the low occupancy of rooms by adults with children seems to
+indicate that none of the hotels has a family-friendly atmosphere.
+Consequently, it would be worth considering what services could be
+included to attract this type of client or whether, on the contrary,
+efforts should be focused on attracting couples and groups of adults to
+the hotel, offering more exclusive services.
