@@ -2064,18 +2064,15 @@ hotel_bookings_v2 %>%
 
 #### 5.4.2 Key takeaways
 
-- **Data scope and seasonality**
+**Data scope and seasonality**
 
 - The data contains bookings from July 2015 - August 2017; 6 months of
   data for 2015, full year data for 2016 and 8 months data for 2017.
-
 - Busiest months: May 2017, July 2017, August 2016
-
 - The City Hotel had more bookings overall.
-
 - Busiest month in City Hotel: May 2017
 
-- **Goal 1: Marketing campaign to target people who book early.**
+**Goal 1: Marketing campaign to target people who book early**
 
 What group of guests tend to book early?
 
@@ -2092,7 +2089,7 @@ What are the main factors that influence lead time?
 
 - Hotel type, number of children, distribution channel.
 
-- **Goal 2: Increase weekend bookings.**
+**Goal 2: Increase weekend bookings**
 
 What group of guests book the most weekend nights?
 
@@ -2107,12 +2104,10 @@ Which season is popular for weekend stays?
 
 - Summer month - July and August are popular in general and for weekend
   stays.
-
 - Week 27, 32, 33 were the most popular in 2016 for weekend night stays.
   discounts during other seasons?
 
-- **Goal 3: Develop promotions based on different booking
-  distributions.**
+**Goal 3: Develop promotions based on different booking distributions**
 
 How many of the transactions are occurring for each different
 distribution type?
@@ -2126,14 +2121,12 @@ on whether or not there was a deposit or what market segment they
 represent?
 
 - Almost 90% of the booking were ‘No Deposit’
-
 - 74% of the ‘TA/TO’ transactions were online and approximately 20%
   offline.
-
 - Online travel agency bookings where no deposit is required are the
   most popular among guests.
 
-- **Goal 4: Prevent cancellations.**
+**Goal 4: Prevent cancellations**
 
 How many bookings were cancelled out of total?
 
@@ -2144,29 +2137,22 @@ How many bookings were cancelled out of total?
 What types of bookings are likely to get cancelled?
 
 - 94% of the Non Refund bookings got cancelled!
-
 - 27% of the ‘No Deposit’ bookings were cancelled (Note: almost 90% of
   the bookings are ‘No Deposit’)
-
 - Bookings made approximately 3,5 month in advance tend to get
   cancelled; the average lead time of cancelled bookings was 105 days
-
 - Guests with 2 children cancelled 41% of their bookings!
-
 - Guests with no children cancelled 27% of their bookings. (Note: the
   majority of the bookings come from guests without children.)
-
 - Almost 32% of the bookings were cancelled in 2017 (Note: data from
   Jan-Aug).
-
 - Most bookings were cancelled in July and August 2017.(Note: most
   bookings during summer)
-
 - 35% of the ‘Online TA’ bookings got cancelled. 27% of the ‘Groups’
   bookings got cancelled. (Note: ‘Online TA’ have the highest number of
   bookings.)
 
-- **Further areas of interest:**
+**Further areas of interest:**
 
 Which countries do customers come from?
 
@@ -2195,47 +2181,40 @@ What is the preferred room type in each hotel?
 
 ## 6. Share and Act Phases
 
-Top recommendations
+### 6.1 Top recommendations
 
-- Goal 1: Marketing campaign to target people who book early.
+**Goal 1: Marketing campaign to target people who book early**
 
-Online “Early Bird Discounts”
+- Offer “Early Bird Discounts” for those who book 3-4 month in advance,
+  preferably through online travel agencies, as it proved to be the
+  strongest distribution channel.
+- Target families with 1 child, as they tend to book early and also
+  encourage guests with no children to book earlier.
+- Focus “Early Bird Discounts” on City Hotel.
 
-- Goal 2: Increase weekend bookings.
+**Goal 2: Increase weekend bookings**
 
-Online, romantic weekend for couples Shoulder season discounts
+- Offer special “Romantic Weekend” packages for couples in both hotels.
+- Offer special discounts for shoulder seasons to encourage weekend
+  stays outside of peak season as well.
 
-- Goal 3: Develop promotions based on different booking distributions
+**Goal 3: Develop promotions based on different booking distributions**
 
-Online travel agencies, can increase direct bookings as well In terms of
-market segments and distribution channels, TA and TO have shown to be
-the strongest, followed by the direct channel with the hotel. In the
-last case, the use of this channel could be incentivized by means of a
-special offer.
+- Focus marketing campaign on online travel agencies, as most bookings
+  are made through this channel.
+- Special offers for those who book directly, to promote the second most
+  popular channel.
 
-- Goal 4: Prevent cancellations.
+**Goal 4: Prevent cancellations**
 
-The fact that a large portion of these reservations did not have a
-deposit indicates that customers are more inclined to cancel a
-reservation when they are not required to put down a deposit. The
-company should change the cancellation policy to make it a bit more
-restrictive. Additionally, it should conduct a brief survey of customers
-when they cancel a reservation to find out why they do so.
+- Revise cancellation policy to make it more restrictive; consider
+  requiring deposit in certain cases.
+- Conduct survey among guests who cancelled a reservation get
+  information on the reason.
 
-we could send the customer an e-mail to confirm their booking. If they
-are not able confirm the booking would be deemed cancelled and the
-customer has to reserve a new booking. This would ensure a more vigilant
-booking method on part of the hotel and would also reduct the number of
-false bookings.
+**Further recommendations**
 
-Further recommendations
-
-loyalty strategy could be created, especially for clients coming from
-Portugal, as they are the main clients for both hotels.
-
-Finally, the low occupancy of rooms by adults with children seems to
-indicate that none of the hotels has a family-friendly atmosphere.
-Consequently, it would be worth considering what services could be
-included to attract this type of client or whether, on the contrary,
-efforts should be focused on attracting couples and groups of adults to
-the hotel, offering more exclusive services.
+- Special offers for guests from Portugal, as they are the main guests.
+- Explore options to make the hotels attractive for guests from the
+  Americas and Asia as well.
+- Improve breakfast offer to make it more attractive
