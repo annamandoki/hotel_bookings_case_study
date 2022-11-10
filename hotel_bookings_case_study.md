@@ -1,7 +1,7 @@
 Hotel Bookings Case Study
 ================
 Anna Mándoki
-2022-11-09
+2022-11-10
 
 ## 1. Introduction
 
@@ -1167,7 +1167,21 @@ glimpse(hotel_bookings_v2)
 Data frame used in the Analyze Phase: ‘hotel_bookings_v2’ including all
 distinct bookings (realized and cancelled).
 
-### 5.1 Summary statistics
+### 5.1 Total bookings
+
+``` r
+hotel_bookings_v2 %>%
+  group_by(hotel) %>%
+  summarize(total_bookings = sum(hotel != " "))
+```
+
+    ## # A tibble: 2 × 2
+    ##   hotel        total_bookings
+    ##   <chr>                 <int>
+    ## 1 City Hotel            53424
+    ## 2 Resort Hotel          33968
+
+### 5.2 Summary statistics
 
 Let’s run some statistics to get a first idea for our analysis and to be
 able to spot potential outliers.
@@ -1207,7 +1221,7 @@ hotel_bookings_v2 %>%
     ##  3rd Qu.: 134.00   3rd Qu.:0.00000             3rd Qu.:1.0000           
     ##  Max.   :5400.00   Max.   :8.00000             Max.   :5.0000
 
-### 5.2 Observations on summary statistics
+**Observations on summary statistics**
 
 - The average lead time is 79.89 days, meaning that guests tend to book
   approximately 2,5 month in advance. The maximum lead time was 737 days
@@ -1268,6 +1282,7 @@ ggplot(data = hotel_bookings_v2) +
 ```
 
 ![](hotel_bookings_case_study_files/figure-gfm/monthly%20bookings%20year-1.png)<!-- -->
+
 Busiest months: May 2017, July 2017, August 2016
 
 ``` r
@@ -1288,7 +1303,7 @@ ggplot(data = hotel_bookings_v2) +
 A stakeholder is planning a marketing campaign to target people who book
 early. Let’s find out what group of guests tend to book early.
 
-- **Lead time by hotel type**
+**Lead time by hotel type**
 
 ``` r
 ggplot(data = hotel_bookings_v2) +
@@ -1297,7 +1312,8 @@ ggplot(data = hotel_bookings_v2) +
 ```
 
 ![](hotel_bookings_case_study_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
-\* **Average lead time by hotel type**
+
+**Average lead time by hotel type**
 
 ``` r
 lead_time_hotel <- hotel_bookings_v2 %>%
@@ -1319,10 +1335,11 @@ ggplot(data = lead_time_hotel) +
   labs(title = "Average lead time by hotel type", x = " ", y = "Average lead time (in days)")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/plot%20avg%20lead%20time%20hotel-1.png)<!-- --> -
-The average lead time is higher for Resort Hotel bookings.
+![](hotel_bookings_case_study_files/figure-gfm/plot%20avg%20lead%20time%20hotel-1.png)<!-- -->
 
-- **Average lead time by number of children**
+- The average lead time is higher for Resort Hotel bookings.
+
+**Average lead time by number of children**
 
 Create ‘lead_time_children’ data frame.
 
@@ -1359,7 +1376,7 @@ lead_time_children %>%
 
 ![](hotel_bookings_case_study_files/figure-gfm/avg%20lead%20time%20children%20plot-1.png)<!-- -->
 
-- **Average lead time by distribution channel**
+**Average lead time by distribution channel**
 
 Create ‘lead_time_distribution’ data frame to have a look at the
 numbers.
@@ -1408,7 +1425,7 @@ book early**
 A stakeholder wants to increase weekend bookings. Let’s find out what
 group of guests book the most weekend nights.
 
-- **Weekend night stays by hotel type**
+**Weekend night stays by hotel type**
 
 ``` r
 total_nights_h <- hotel_bookings_v2 %>%
@@ -1435,7 +1452,7 @@ ggplot(data = hotel_bookings_v2) +
 - Guests book more weekend nights in City Hotel. (Note: City Hotel had
   more bookings overall.)
 
-- **Weekend night stays by number of children**
+**Weekend night stays by number of children**
 
 ``` r
 # excluding outlier booking with 10 children
@@ -1472,7 +1489,7 @@ hotel_bookings_v2 %>%
 - Guests with no children book the most weekend nights. (Note: guests
   with no children have the most bookings overall.)
 
-- **Weekend night stays by arrival date**
+**Weekend night stays by arrival date**
 
 ``` r
 hotel_bookings_v2 %>%
@@ -1515,7 +1532,7 @@ hotel_bookings_v2 %>%
 ![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%202017%20by%20month-1.png)<!-- --> -
 Summer month are popular in general and for weekend stays.
 
-- **Weekend night stays by market segment**
+**Weekend night stays by market segment**
 
 ``` r
 hotel_bookings_v2 %>%
@@ -1542,7 +1559,7 @@ seasons?) - Guests who book through online travel agencies
 
 #### 5.3.4 Booking distributions
 
-- **Number of transactions by distribution type**
+**Number of transactions by distribution type**
 
 ``` r
 hotel_bookings_v2 %>%
@@ -1575,7 +1592,7 @@ hotel_bookings_v2 %>%
 
 ![](hotel_bookings_case_study_files/figure-gfm/transactions%20distribution%20channel-1.png)<!-- -->
 
-- **Number of transactions by deposit type**
+**Number of transactions by deposit type**
 
 Is the number of bookings for each distribution type different depending
 on whether or not there was a deposit?
@@ -1608,7 +1625,7 @@ ggplot(data = hotel_bookings_v2) +
 ```
 
 ![](hotel_bookings_case_study_files/figure-gfm/transactions%20distribution%20deposit-1.png)<!-- -->
-\* **Number of transactions by market segment**
+**Number of transactions by market segment**
 
 Is the number of bookings for each distribution type different depending
 on what market segment they represent?
@@ -1665,7 +1682,7 @@ popular among guests.
 
 #### 5.3.5 Cancellations
 
-- **Goal 4: Prevent cancellations**
+**Goal 4: Prevent cancellations**
 
 Convert ‘is_canceled’ values from integer to character.
 
@@ -1673,7 +1690,7 @@ Convert ‘is_canceled’ values from integer to character.
 hotel_bookings_v2$is_canceled <- as.character(hotel_bookings_v2$is_canceled)
 ```
 
-- **How many bookings were cancelled out of total?**
+**How many bookings were cancelled out of total?**
 
 ``` r
 hotel_bookings_v2 %>%
@@ -1700,7 +1717,7 @@ ggplot(hotel_bookings_v2) +
 
 ![](hotel_bookings_case_study_files/figure-gfm/cancellation%20bar%20chart-1.png)<!-- -->
 
-- **What is the most frequent deposit type for cancelled bookings?**
+**What is the most frequent deposit type for cancelled bookings?**
 
 ``` r
 hotel_bookings_v2 %>%
@@ -1734,10 +1751,9 @@ ggplot(hotel_bookings_v2) +
 ![](hotel_bookings_case_study_files/figure-gfm/cancellation%20ratio%20deposit%20type-1.png)<!-- -->
 
 - 94% of the Non Refund bookings got cancelled!
-
 - Note: most of the booking are ‘No Deposit’.
 
-- **Cancellations by lead time**
+**Cancellations by lead time**
 
 ``` r
 ggplot(data = hotel_bookings_v2) +
@@ -1788,7 +1804,7 @@ hotel_bookings_v2 %>%
     ## 1 City Hotel            102.             0           629
     ## 2 Resort Hotel          114.             0           471
 
-- **Cancellations by number of children**
+**Cancellations by number of children**
 
 ``` r
 canceled_children_df <- hotel_bookings_v2 %>%
@@ -1832,10 +1848,9 @@ hotel_bookings_v2 %>%
 ![](hotel_bookings_case_study_files/figure-gfm/cancellation%20ratio%20by%20number%20of%20children-1.png)<!-- -->
 
 - Guests with 2 children cancelled 41% of their bookings!
-
 - Note: the majority of the bookings come from guests without children.
 
-- **Cancellations by arrival date**
+**Cancellations by arrival date**
 
 ``` r
 hotel_bookings_v2 %>%
@@ -1862,11 +1877,10 @@ ggplot(data = hotel_bookings_v2) +
 ![](hotel_bookings_case_study_files/figure-gfm/cancellations%20year%20and%20month-1.png)<!-- -->
 
 - Almost 32% of the bookings were cancelled in 2017 (Jan-Aug).
-
 - Most bookings were cancelled in July and August 2017.(Note: most
   bookings during summer)
 
-- **Cancellations by market segment**
+**Cancellations by market segment**
 
 ``` r
 hotel_bookings_v2 %>%
@@ -1909,7 +1923,7 @@ ggplot(hotel_bookings_v2) +
 
 #### 5.3.6 Further areas of interest
 
-- **Which countries do most hotel guests come from?**
+**Which countries do most hotel guests come from?**
 
 ``` r
 country_df <- hotel_bookings_v2 %>%
@@ -1986,7 +2000,7 @@ continent_df %>%
 
 ![](hotel_bookings_case_study_files/figure-gfm/guest%20continent%20chart-1.png)<!-- -->
 
-- **What is the Average Daily Rate (ADR) throughout the year?**
+**What is the Average Daily Rate (ADR) throughout the year?**
 
 Monthly ADR between July 2015 - Aug 2017 excluding cancelled bookings.
 
@@ -2003,10 +2017,9 @@ hotel_bookings_v2 %>%
 ![](hotel_bookings_case_study_files/figure-gfm/monthly%20adr-1.png)<!-- -->
 
 - ADR mostly consistent throughout the year in City Hotel
-
 - ADR higher during the summer months in the Resort Hotel
 
-- **What is the preferred meal plan?**
+**What is the preferred meal plan?**
 
 ``` r
 # excluding cancelled bookings
@@ -2020,12 +2033,10 @@ hotel_bookings_v2 %>%
 ![](hotel_bookings_case_study_files/figure-gfm/meal%20plan%20by%20hotel%20chart-1.png)<!-- -->
 
 - Bad & Breakfast is the most popular meal plan for both hotel types.
-
 - Half Board is more popular in Resort Hotel.
-
 - Self-catering (no meal) is more popular in City Hotel.
 
-- **What is the preferred room type?**
+**What is the preferred room type?**
 
 ``` r
 # excluding cancelled bookings
