@@ -1370,11 +1370,12 @@ early. Let’s find out what group of guests tend to book early.
 
 ``` r
 ggplot(data = hotel_bookings_v2) +
-  geom_bar(mapping = aes(x = lead_time, fill = hotel)) +
-  labs(title = "Lead time by hotel type", x = "Lead time (days)", y = " ")
+  geom_boxplot(mapping = aes(x = hotel, y = lead_time, fill = hotel)) +
+  labs(title = "Lead time by hotel type", x = " ", y = "Lead time (days)") +
+  theme(legend.position = "none")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/lead%20time%20hotel%20bar%20chart-1.png)<!-- -->
 
 **Average lead time by hotel type**
 
@@ -1398,7 +1399,7 @@ ggplot(data = lead_time_hotel) +
   labs(title = "Average lead time by hotel type", x = " ", y = "Average lead time (in days)")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/plot%20avg%20lead%20time%20hotel-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/avg%20lead%20time%20hotel%20bar%20chart-1.png)<!-- -->
 
 - The average lead time is higher for Resort Hotel bookings.
 
@@ -1432,12 +1433,13 @@ print(lead_time_children)
 lead_time_children %>%
   filter(children !=10) %>%
   ggplot() +
-  geom_col(mapping = aes(x = reorder(children, -avg_lead_time), y = avg_lead_time, fill = avg_lead_time)) +
+  geom_col(mapping = aes(x = children, y = avg_lead_time, fill = avg_lead_time)) +
+  geom_hline (yintercept = 80) +
   labs(title = "Average lead time by number of children", x = " ", y = "Average lead time (in days)") +
   theme(legend.position = "none")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/avg%20lead%20time%20children%20plot-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/avg%20lead%20time%20children%20bar%20chart-1.png)<!-- -->
 
 **Average lead time by distribution channel**
 
@@ -1474,7 +1476,7 @@ lead_time_distribution %>%
   theme(legend.position = "none")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/avg%20lead%20time%20distribution-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/avg%20lead%20time%20distribution%20bar%20chart-1.png)<!-- -->
 
 **Observations - Goal 1: Marketing campaign targeting guests who tend to
 book early**
@@ -1510,7 +1512,7 @@ ggplot(data = hotel_bookings_v2) +
   labs(title = "Weekend night stays by hotel type", x = " ", y = "No. of weekend nights")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%20hotel%20type-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%20hotel%20type%20bar%20chart-1.png)<!-- -->
 
 - Guests book more weekend nights in City Hotel. (Note: City Hotel had
   more bookings overall.)
@@ -1547,7 +1549,7 @@ hotel_bookings_v2 %>%
   theme(legend.position = "none")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%20children-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%20children%20bar%20chart-1.png)<!-- -->
 
 - Guests with no children book the most weekend nights. (Note: guests
   with no children have the most bookings overall.)
@@ -1653,7 +1655,7 @@ hotel_bookings_v2 %>%
   coord_flip()
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/transactions%20distribution%20channel-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/transactions%20distribution%20channel%20bar%20chart-1.png)<!-- -->
 
 **Number of transactions by deposit type**
 
@@ -1687,7 +1689,7 @@ ggplot(data = hotel_bookings_v2) +
   coord_flip()
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/transactions%20distribution%20deposit-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/transactions%20distribution%20deposit%20bar%20chart-1.png)<!-- -->
 **Number of transactions by market segment**
 
 Is the number of bookings for each distribution type different depending
@@ -1802,7 +1804,7 @@ ggplot(hotel_bookings_v2) +
   labs(title = "Cancelled vs not cancelled bookings by deposit type", x = " ", y = "No. of bookings")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/cancellations%20deposit%20type-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/cancellations%20deposit%20type%20bar%20chart-1.png)<!-- -->
 
 ``` r
 ggplot(hotel_bookings_v2) +
@@ -1825,7 +1827,7 @@ ggplot(data = hotel_bookings_v2) +
   labs(title = "Lead time for cancelled bookings", x = " ", y = "Lead time (in days)")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/cancelled%20boxplot-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/cancellations%20boxplot-1.png)<!-- -->
 
 ``` r
 hotel_bookings_v2 %>%
@@ -1896,7 +1898,7 @@ hotel_bookings_v2 %>%
   labs(title = "Cancelled vs not cancelled bookings by number of children", x = "No. of children", y = "No. of bookings")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](hotel_bookings_case_study_files/figure-gfm/cancellations%20no%20of%20children%20dodge%20bar%20chart-1.png)<!-- -->
 
 ``` r
 hotel_bookings_v2 %>%
