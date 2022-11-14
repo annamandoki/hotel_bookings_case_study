@@ -1,7 +1,7 @@
 Hotel Bookings Case Study
 ================
 Anna Mándoki
-2022-11-10
+2022-11-14
 
 ## 1. Introduction
 
@@ -265,6 +265,12 @@ library(lubridate)
     ## The following objects are masked from 'package:base':
     ## 
     ##     date, intersect, setdiff, union
+
+``` r
+library(explore)
+```
+
+    ## Warning: package 'explore' was built under R version 4.2.2
 
 ### 4.3 Data importing
 
@@ -647,10 +653,15 @@ categories. This might provide some directions for further exploration.
 We should have two categories for hotel: City Hotel and Resort Hotel
 
 ``` r
-unique(hotel_bookings_v2$hotel)
+hotel_bookings_v2 %>% describe_cat(hotel)
 ```
 
-    ## [1] "Resort Hotel" "City Hotel"
+    ## variable = hotel
+    ## type     = character
+    ## na       = 0 of 87 392 (0%)
+    ## unique   = 2
+    ##  City Hotel   = 53 424 (61.1%)
+    ##  Resort Hotel = 33 968 (38.9%)
 
 Create plot for a quick visual representation.
 
@@ -671,23 +682,38 @@ ggplot(data = hotel_bookings_v2) +
   - FB – Full board (breakfast, lunch and dinner)
 
 ``` r
-unique(hotel_bookings_v2$meal)
+hotel_bookings_v2 %>% describe_cat(meal)
 ```
 
-    ## [1] "BB"        "FB"        "HB"        "SC"        "Undefined"
+    ## variable = meal
+    ## type     = character
+    ## na       = 0 of 87 392 (0%)
+    ## unique   = 5
+    ##  BB        = 67 974 (77.8%)
+    ##  FB        = 360 (0.4%)
+    ##  HB        = 9 085 (10.4%)
+    ##  SC        = 9 481 (10.8%)
+    ##  Undefined = 492 (0.6%)
 
 ‘SC’ and ‘Undefined’ both mean no meal package so they can be
-categorized as ‘SC’ = Self-catering. I am replacing ‘Undefined’ with
-‘SC’ across the column.
+categorized as ‘SC’ = Self-catering. I am going to merge ‘Undefined’
+into ‘SC’ by replacing ‘Undefined’ with ‘SC’ across the column.
 
 ``` r
 hotel_bookings_v2 <- hotel_bookings_v2 %>%
   mutate(meal = str_replace(meal,"Undefined", "SC"))
 
-unique(hotel_bookings_v2$meal)
+hotel_bookings_v2 %>% describe_cat(meal)
 ```
 
-    ## [1] "BB" "FB" "HB" "SC"
+    ## variable = meal
+    ## type     = character
+    ## na       = 0 of 87 392 (0%)
+    ## unique   = 4
+    ##  BB      = 67 974 (77.8%)
+    ##  FB      = 360 (0.4%)
+    ##  HB      = 9 085 (10.4%)
+    ##  SC      = 9 973 (11.4%)
 
 Create visual.
 
@@ -705,11 +731,20 @@ ggplot(data = hotel_bookings_v2) +
   - TO = Tour Operators
 
 ``` r
-unique(hotel_bookings_v2$market_segment)
+hotel_bookings_v2 %>% describe_cat(market_segment)
 ```
 
-    ## [1] "Direct"        "Corporate"     "Online TA"     "Offline TA/TO"
-    ## [5] "Complementary" "Groups"        "Aviation"
+    ## variable = market_segment
+    ## type     = character
+    ## na       = 0 of 87 392 (0%)
+    ## unique   = 7
+    ##  Aviation      = 227 (0.3%)
+    ##  Complementary = 702 (0.8%)
+    ##  Corporate     = 4 212 (4.8%)
+    ##  Direct        = 11 803 (13.5%)
+    ##  Groups        = 4 942 (5.7%)
+    ##  Offline TA/TO = 13 889 (15.9%)
+    ##  Online TA     = 51 617 (59.1%)
 
 ``` r
 ggplot(data = hotel_bookings_v2) +
@@ -727,10 +762,18 @@ ggplot(data = hotel_bookings_v2) +
   - TO = Tour Operators
 
 ``` r
-unique(hotel_bookings_v2$distribution_channel)
+hotel_bookings_v2 %>% describe_cat(distribution_channel)
 ```
 
-    ## [1] "Direct"    "Corporate" "TA/TO"     "Undefined" "GDS"
+    ## variable = distribution_channel
+    ## type     = character
+    ## na       = 0 of 87 392 (0%)
+    ## unique   = 5
+    ##  Corporate = 5 081 (5.8%)
+    ##  Direct    = 12 988 (14.9%)
+    ##  GDS       = 181 (0.2%)
+    ##  TA/TO     = 69 141 (79.1%)
+    ##  Undefined = 1 (0%)
 
 Note: GDS = Global Distribution Systems *Global distribution systems
 (GDS) are an important distribution channel for connecting with travel
@@ -782,10 +825,16 @@ There is only one such booking.
     stay.
 
 ``` r
-unique(hotel_bookings_v2$deposit_type)
+hotel_bookings_v2 %>% describe_cat(deposit_type)
 ```
 
-    ## [1] "No Deposit" "Refundable" "Non Refund"
+    ## variable = deposit_type
+    ## type     = character
+    ## na       = 0 of 87 392 (0%)
+    ## unique   = 3
+    ##  No Deposit = 86 247 (98.7%)
+    ##  Non Refund = 1 038 (1.2%)
+    ##  Refundable = 107 (0.1%)
 
 ``` r
 ggplot(data = hotel_bookings_v2) +
@@ -805,10 +854,17 @@ No Deposit for a significant number of bookings.
   - Transient-party
 
 ``` r
-unique(hotel_bookings_v2$customer_type)
+hotel_bookings_v2 %>% describe_cat(customer_type)
 ```
 
-    ## [1] "Transient"       "Contract"        "Transient-Party" "Group"
+    ## variable = customer_type
+    ## type     = character
+    ## na       = 0 of 87 392 (0%)
+    ## unique   = 4
+    ##  Contract        = 3 139 (3.6%)
+    ##  Group           = 544 (0.6%)
+    ##  Transient       = 71 986 (82.4%)
+    ##  Transient-Party = 11 723 (13.4%)
 
 ``` r
 ggplot(data = hotel_bookings_v2) +
@@ -829,10 +885,16 @@ customer type.
   - No-Show
 
 ``` r
-unique(hotel_bookings_v2$reservation_status)
+hotel_bookings_v2 %>% describe_cat(reservation_status)
 ```
 
-    ## [1] "Check-Out" "Canceled"  "No-Show"
+    ## variable = reservation_status
+    ## type     = character
+    ## na       = 0 of 87 392 (0%)
+    ## unique   = 3
+    ##  Canceled  = 23 007 (26.3%)
+    ##  Check-Out = 63 371 (72.5%)
+    ##  No-Show   = 1 014 (1.2%)
 
 ``` r
 ggplot(data = hotel_bookings_v2) +
@@ -847,6 +909,7 @@ ggplot(data = hotel_bookings_v2) +
 
 - Modified the ‘Undefined’ category in the ‘meal’ column by merging it
   into the category ‘SC’.
+- One booking with ‘Undefined’ distribution channel
 - Categories in the other columns were fine, no further transformation
   made.
 
