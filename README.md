@@ -21,6 +21,7 @@ Analyze a public dataset that contains information on hotel bookings due to arri
 4. Exploratory Data Analysis with supporting visualizations
 5. Summary of the analysis and key takeaways
 6. Top recommendations for the company based on the analysis
+7. [Presentation](https://github.com/annamandoki/hotel_bookings_case_study/blob/main/Presentation_Hotel%20_Bookings%20_Early_Bookings.pdf) on early bookings
 
 ## Tools
 
