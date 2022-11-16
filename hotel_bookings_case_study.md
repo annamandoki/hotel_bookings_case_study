@@ -1,7 +1,7 @@
 Hotel Bookings Case Study
 ================
 Anna Mándoki
-2022-11-14
+2022-11-16
 
 ## 1. Introduction
 
@@ -80,8 +80,9 @@ July of 2015 and the 31st of August 2017, including bookings that
 effectively arrived and bookings that were cancelled.
 
 The file contains 32 columns with information such as when the booking
-was made, lead time, the number of adults, children, and/or babies, meal
-plan and guest country of origin among other things.
+was made, lead time, the number of adults, children, and/or babies,
+distribution channel, meal plan and guest country of origin among other
+things.
 
 ### 3.2 Dataset location & licence
 
@@ -1346,7 +1347,7 @@ ggplot(data = hotel_bookings_v2) +
 
 ![](hotel_bookings_case_study_files/figure-gfm/monthly%20bookings%20year-1.png)<!-- -->
 
-Busiest months: May 2017, July 2017, August 2016
+- Busiest months: May 2017, July 2017, August 2016
 
 ``` r
 ggplot(data = hotel_bookings_v2) +
@@ -1509,7 +1510,8 @@ print(total_nights_h)
 ``` r
 ggplot(data = hotel_bookings_v2) +
   geom_col(mapping = aes(x = hotel, y = stays_in_weekend_nights, fill = hotel)) +
-  labs(title = "Weekend night stays by hotel type", x = " ", y = "No. of weekend nights")
+  labs(title = "Weekend night stays by hotel type", x = " ", y = "No. of weekend nights") +
+  theme(legend.position = "none")
 ```
 
 ![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%20hotel%20type%20bar%20chart-1.png)<!-- -->
