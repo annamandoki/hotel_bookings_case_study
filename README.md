@@ -2,7 +2,7 @@
 
 ## About the project
 
-This case study was inspired by a series of exercises related to the 'hotel_bookings' dataset I worked through while I was doing the Google Data Analytics Professional Certificate course. The dataset contains booking information a city hotel and a resort hotel. My goal with this project was to dive deeper into the data and build a case study.
+This [case study](https://github.com/annamandoki/hotel_bookings_case_study/blob/main/hotel_bookings_case_study.md) was inspired by a series of exercises related to the 'hotel_bookings' dataset I worked through while I was doing the Google Data Analytics Professional Certificate course. The dataset contains booking information a city hotel and a resort hotel. My goal with this project was to dive deeper into the data and build a case study.
 
 ## Business Objective
 
