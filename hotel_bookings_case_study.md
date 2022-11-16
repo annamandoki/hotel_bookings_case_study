@@ -845,6 +845,7 @@ ggplot(data = hotel_bookings_v2) +
 ```
 
 ![](hotel_bookings_case_study_files/figure-gfm/bar%20chart%20deposit%20type-1.png)<!-- -->
+
 No Deposit for a significant number of bookings.
 
 - **customer_type**
@@ -1582,8 +1583,9 @@ hotel_bookings_v2 %>%
   theme(legend.position = "none")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%202016%20by%20week-1.png)<!-- --> -
-Week 27, 32, 33 were the most popular for weekend night stays.
+![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%202016%20by%20week-1.png)<!-- -->
+
+- Week 27, 32, 33 were the most popular for weekend night stays.
 
 ``` r
 hotel_bookings_v2 %>%
@@ -1596,8 +1598,9 @@ hotel_bookings_v2 %>%
   theme(axis.text.x = element_text(angle = 90), legend.position = "none")
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%202017%20by%20month-1.png)<!-- --> -
-Summer month are popular in general and for weekend stays.
+![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%202017%20by%20month-1.png)<!-- -->
+
+- Summer month are popular in general and for weekend stays.
 
 **Weekend night stays by market segment**
 
@@ -1612,8 +1615,9 @@ hotel_bookings_v2 %>%
   coord_flip()
 ```
 
-![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%20by%20market%20segment-1.png)<!-- --> -
-People book the most weekend nights through online travel agencies.
+![](hotel_bookings_case_study_files/figure-gfm/weekend%20nights%20by%20market%20segment-1.png)<!-- -->
+
+- People book the most weekend nights through online travel agencies.
 
 **Goal 2: Increase weekend night bookings**
 
@@ -1692,6 +1696,7 @@ ggplot(data = hotel_bookings_v2) +
 ```
 
 ![](hotel_bookings_case_study_files/figure-gfm/transactions%20distribution%20deposit%20bar%20chart-1.png)<!-- -->
+
 **Number of transactions by market segment**
 
 Is the number of bookings for each distribution type different depending
