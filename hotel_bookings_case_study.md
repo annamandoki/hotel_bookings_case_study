@@ -1,14 +1,14 @@
 Hotel Bookings Case Study
 ================
 Anna Mándoki
-2022-11-16
+2022-11-17
 
 ## 1. Introduction
 
 This case study was inspired by a series of exercises related to the
 ‘hotel_bookings’ dataset I worked through while I was doing the Google
 Data Analytics Professional Certificate course. The dataset contains
-booking information a city hotel and a resort hotel, and it is
+booking information for a city hotel and a resort hotel, and it is
 recommended on
 [Kaggle](https://www.kaggle.com/datasets/jessemostipak/hotel-booking-demand)
 as an ideal dataset to practice exploratory data analysis (EDA).
@@ -1465,7 +1465,7 @@ print(lead_time_distribution)
     ## 4 TA/TO                         88.6             0           629
     ## 5 Undefined                    103             103           103
 
-- Guests booking through Travel Agencies or Travel Offices tend to book
+- Guests booking through Travel Agents or Tour Operators tend to book
   earlier.
 
 ``` r
@@ -1485,7 +1485,7 @@ book early**
 
 - Resort Hotel guests
 - Guests with 1 child
-- Guests booking through travel agencies or travel offices
+- Guests booking through Travel Agents or Tour Operators
 
 #### 5.3.3 Weekend bookings
 
@@ -2165,7 +2165,7 @@ What group of guests tend to book early?
 - Resort Hotel bookings are made more days in advance than City Hotel
   bookings; 83 days compared to 78 days.
 - Guests with no children book the least in advance; 79 days on average.
-- Guests booking through Travel Agencies or Travel Offices tend to book
+- Guests booking through Travel Agencies or Tour Operators tend to book
   earlier; 87 days in advance.
 
 What are the main factors that influence lead time?
@@ -2195,8 +2195,8 @@ Which season is popular for weekend stays?
 How many of the transactions are occurring for each different
 distribution type?
 
-- 79% of the transactions occurred through travel agencies or travel
-  offices (TA/TO), 14% were direct transactions, 5% corporate and only
+- 79% of the transactions occurred through travel agencies or Tour
+  Operators (TA/TO), 14% were direct transactions, 5% corporate and only
   0.2% through global distribution systems (GDS).
 
 Is the number of bookings for each distribution type different depending
